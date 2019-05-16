@@ -1,6 +1,8 @@
-import React from 'react';
-import { Button, Typography, Card, Input } from 'antd';
-import { withRouter } from 'react-router-dom';
+import React from "react";
+import { Button, Typography, Card, Input } from "antd";
+import { withRouter } from "react-router-dom";
+import Phylogeny from "./Phylogeny";
+import SplitPane from "react-split-pane";
 
 const { Paragraph } = Typography;
 
@@ -10,19 +12,24 @@ const { Paragraph } = Typography;
 class Upload extends React.Component {
   constructor(props) {
     super(props);
+    this.state = { taxa: [] };
   }
+
+  setTaxonKeys = taxa => {
+    this.setState({ taxa: taxa });
+  };
 
   render() {
     return (
-      <Card title="Start exploring" style={{ margin: '20px auto', width: 500 }}>
-        <Typography>
-          <Paragraph>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna.
-          </Paragraph>
-          <Button type="primary" onClick={this.startParsing}>Next</Button>
-        </Typography>
-      </Card>
-    )
+      <SplitPane split="vertical" minSize={300} defaultSize={300}>
+        <Card >
+          <Phylogeny setTaxonKeys={this.setTaxonKeys} />
+        </Card>
+        <Card >
+          Map
+        </Card>
+      </SplitPane>
+    );
   }
 }
 
