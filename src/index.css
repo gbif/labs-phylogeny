@@ -67,3 +67,7 @@ cursor: not-allowed;
 .Resizer.disabled:hover {
 border-color: transparent;
 }
+
+.Pane.vertical.Pane1{
+  overflow: auto;
+}

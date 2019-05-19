@@ -2,12 +2,11 @@ import React from "react";
 import { Button, Typography, Card, Input } from "antd";
 import { withRouter } from "react-router-dom";
 import Phylogeny from "./Phylogeny";
+import Map from './Map';
+// https://github.com/tomkp/react-split-pane
 import SplitPane from "react-split-pane";
 
 const { Paragraph } = Typography;
-
-// bedste bud er nok. Og vist det der bruges på phylolink
-// http://phylotree.hyphy.org/documentation/examples.html
 
 class Upload extends React.Component {
   constructor(props) {
@@ -19,15 +18,20 @@ class Upload extends React.Component {
     this.setState({ taxa: taxa });
   };
 
+  refreshSizes = e => {
+    this.setState({shouldRefresh: true})
+  }
+
   render() {
+    let shouldRefresh = false;
+    if (this.state.shouldRefresh) {
+      this.setState({shouldRefresh: false});
+      shouldRefresh = true;
+    }
     return (
-      <SplitPane split="vertical" minSize={300} defaultSize={300}>
-        <Card >
-          <Phylogeny setTaxonKeys={this.setTaxonKeys} />
-        </Card>
-        <Card >
-          Map
-        </Card>
+      <SplitPane split="vertical" minSize={300} defaultSize={300} style={{overflow: 'auto', height: 'calc(100vh - 68px)'}} onDragFinished={this.refreshSizes}>
+        <Phylogeny setTaxonKeys={this.setTaxonKeys} />
+        <Map shouldRefresh={shouldRefresh}></Map>
       </SplitPane>
     );
   }

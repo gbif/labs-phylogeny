@@ -23,7 +23,7 @@ class Phylogeny extends React.Component {
 
   render() {
     return (
-      <Card style={{ margin: '20px auto', maxWidth: 500 }}>
+      <Card style={{ margin: 20, overflow: 'auto' }}>
 				<PhyloTree></PhyloTree>
       </Card>
     )
