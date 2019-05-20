@@ -54,7 +54,7 @@ class Upload extends React.Component {
           <Paragraph>
             <TextArea value={this.state.value} onChange={e => this.setState({value: e.target.value})} rows={10} placeholder="Enter your NEWICK string here" />
           </Paragraph>
-          <Button type="primary" onClick={this.startParsing}>Next</Button>
+          <Button type="primary" onClick={this.startParsing} disabled={!this.state.value}>Next</Button>
         </Typography>
       </Card>
     )

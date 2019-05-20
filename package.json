@@ -30,6 +30,7 @@
     "react-scripts": "^2.1.5",
     "react-split": "^2.0.4",
     "react-split-pane": "^0.1.87",
+    "styled-components": "^4.2.0",
     "validator": "^10.11.0"
   },
   "scripts": {
