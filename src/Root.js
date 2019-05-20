@@ -18,27 +18,25 @@ class Root extends React.Component {
   //   };
   // }
 
-  setStep = no => {
-    if (no < this.state.step) this.setState({ step: no });
+  setStep = step => {
+    this.props.history.push(step)
+  }
+
+  getCurrentStep = () => {
+    switch(this.props.location.pathname) {
+      case '/phylogeny': 
+        return 0;
+      case '/match': 
+        return 1;
+      case '/explore': 
+        return 2;
+      default:
+        return -1;
+    }
   }
 
   render() {
-    const { location } = this.props;
-    console.log(location.pathname);
-    let step = -1;
-    switch(location.pathname) {
-      case '/phylogeny': 
-        step = 0;
-        break;
-      case '/match': 
-        step = 1;
-        break;
-      case '/explore': 
-        step = 2;
-        break;
-      default:
-        step = -1;
-    }
+    let step = this.getCurrentStep();
     return (
       <React.Fragment>
         <div style={{ display: 'flex', background: 'white', padding: 20, borderBottom: '1px solid #eee' }}>
@@ -48,10 +46,10 @@ class Root extends React.Component {
             </Link>
           </Button>
           <Steps style={{ flex: '1 1 auto' }} size="small" current={step}>
-            <Step title="Upload phylogeny" onClick={e => this.setStep(0)} />
+            <Step title="Upload phylogeny" onClick={e => this.setStep('/phylogeny')} />
             {/* <Step title="Traits" description="Choose" onClick={e => this.setStep(1)}/> */}
-            <Step title="Match names" onClick={e => this.setStep(2)} />
-            <Step title="Explore" onClick={e => this.setStep(3)} />
+            <Step title="Match names"/>
+            <Step title="Explore"/>
           </Steps>
         </div>
         <div>

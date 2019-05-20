@@ -16,7 +16,7 @@ class Upload extends React.Component {
   }
 
   componentDidMount = () => {
-    setTimeout(() => this.setState({showMap: true}), 200);
+    setTimeout(() => this.setState({showMap: true}), 400);
   }
 
   setTaxonKeys = taxa => {
