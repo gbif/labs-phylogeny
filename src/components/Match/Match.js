@@ -72,7 +72,7 @@ class MatchNames extends React.Component {
 
   next = () => {
     localStorage.setItem('matchedNames', JSON.stringify(this.state.matches));
-    this.props.history.push('/explore')
+    this.props.history.push('/traits')
   }
 
   lookupName = async (name, callback) => {

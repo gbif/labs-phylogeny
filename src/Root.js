@@ -5,6 +5,7 @@ import { withRouter, Route, Switch, Link } from 'react-router-dom';
 import About from './components/About';
 import Upload from './components/Upload';
 import Match from './components/Match';
+import Traits from './components/Traits';
 import Explore from './components/Explore';
 
 const Step = Steps.Step;
@@ -28,8 +29,10 @@ class Root extends React.Component {
         return 0;
       case '/match': 
         return 1;
-      case '/explore': 
+      case '/traits': 
         return 2;
+      case '/explore': 
+        return 3;
       default:
         return -1;
     }
@@ -47,8 +50,8 @@ class Root extends React.Component {
           </Button>
           <Steps style={{ flex: '1 1 auto' }} size="small" current={step}>
             <Step title="Upload phylogeny" onClick={e => this.setStep('/phylogeny')} />
-            {/* <Step title="Traits" description="Choose" onClick={e => this.setStep(1)}/> */}
             <Step title="Match names"/>
+            <Step title="Traits" />
             <Step title="Explore"/>
           </Steps>
         </div>
@@ -57,6 +60,7 @@ class Root extends React.Component {
             <Route path="/" exact component={About}/>
             <Route path="/phylogeny" exact component={Upload}/>
             <Route path="/match" exact component={Match}/>
+            <Route path="/traits" exact component={Traits}/>
             <Route path="/explore" exact component={Explore}/>
           </Switch>
         </div>
