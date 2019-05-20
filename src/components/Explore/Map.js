@@ -3,6 +3,8 @@ import _ from "lodash";
 import mapboxgl from "mapbox-gl";
 import Color from 'color';
 import './map.css';
+import { Menu, Dropdown, Button, Icon, message } from 'antd';
+
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoiaG9mZnQiLCJhIjoiY2llaGNtaGRiMDAxeHNxbThnNDV6MG95OSJ9.p6Dj5S7iN-Mmxic6Z03BEA";
@@ -11,18 +13,44 @@ class Map extends Component {
   constructor(props) {
     super(props);
     this.myRef = React.createRef();
-    this.state = { selected: props.selected || [] };
+    let menu = (
+      <Menu onClick={this.selectBaseLayer}>
+        <Menu.Item key="dark-v10">
+          Dark        
+        </Menu.Item>
+        <Menu.Item key="light-v10">
+          Light
+        </Menu.Item>
+        <Menu.Item key="outdoors-v11">
+          Outdoor
+        </Menu.Item>
+        <Menu.Item key="satellite-v9">
+          Satellite
+        </Menu.Item>
+      </Menu>
+    );
+    this.state = { selected: props.selected || [], menu, baseLayer: 'light-v10' };
   }
+
+  selectBaseLayer = layer => {
+    var layerId = layer.key;
+    if (this.state.baseLayer !== layerId) {
+      this.map.setStyle('mapbox://styles/mapbox/' + layerId);
+      this.updateLayers(this.props.selected, this.props.selected);
+      this.setState({baseLayer: layerId});
+    }
+  };
 
   componentDidMount() {
     this.map = new mapboxgl.Map({
       container: this.myRef.current,
-      style: "mapbox://styles/mapbox/dark-v9",
+      style: "mapbox://styles/mapbox/" + this.state.baseLayer,
       zoom: 0,
       center: [0, 0]
     });
     this.map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-left');
     this.map.on("load", x => this.addLayers(this.props.selected));
+    this.map.on("style.load", x => this.updateLayers(this.props.selected, this.props.selected));
   }
 
   componentWillUnmount() {
@@ -95,8 +123,7 @@ class Map extends Component {
           "circle-stroke-color": Color(color).darken(0.3).hex(),
           "circle-stroke-width": 1
         }
-      },
-      "poi-scalerank2"
+      }
     );
 
     // let map = this.map;
@@ -124,6 +151,13 @@ class Map extends Component {
             Only showing {this.props.selected.length} of {this.props.totalSelected} layers
           </div>
         }
+        <div style={{ zIndex: 100, position: 'absolute', right: 40, top: 40}}>
+          <Dropdown overlay={this.state.menu}>
+            <Button>
+              Baselayer <Icon type="down" />
+            </Button>
+          </Dropdown>
+        </div>
         <div ref={this.myRef} className="map" />
       </div>
     );
