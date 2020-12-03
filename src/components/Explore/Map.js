@@ -3,7 +3,8 @@ import _ from "lodash";
 import mapboxgl from "mapbox-gl";
 import Color from 'color';
 import './map.css';
-import { Menu, Dropdown, Button, Icon, message } from 'antd';
+import { Menu, Dropdown, Button,  message } from 'antd';
+import {DownOutlined} from "@ant-design/icons"
 
 
 mapboxgl.accessToken =
@@ -154,7 +155,7 @@ class Map extends Component {
         <div style={{ zIndex: 100, position: 'absolute', right: 30, top: 30}}>
           <Dropdown overlay={this.state.menu}>
             <Button>
-              Baselayer <Icon type="down" />
+              Baselayer <DownOutlined />
             </Button>
           </Dropdown>
         </div>

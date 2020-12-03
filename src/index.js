@@ -4,15 +4,23 @@ import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
 import './index.css';
 import Root from './Root';
+import Explore from './components/Explore'
+import Upload from './components/Upload'
 import { Router, Route, Switch } from 'react-router-dom';
 import history from './history';
+import ContextProvider from "./components/ContextProvider";
 
 ReactDOM.render(
+  <ContextProvider>
   <Router history={history}>
     <Switch>
       <Route path="/" component={Root}/>
+      <Route path="/explore" component={Explore}/>
+      <Route path="/phylogeny" component={Upload}/>
+
     </Switch>
-  </Router>,
+  </Router>
+  </ContextProvider>,
   document.getElementById('root')
 );
 

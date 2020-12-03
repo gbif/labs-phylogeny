@@ -3,31 +3,19 @@ import { Button, Typography, Card, Alert, Table } from 'antd';
 import { withRouter } from 'react-router-dom';
 import async from 'async';
 import axios from 'axios';
+import withContext from "../withContext"
 // import qs from 'qs';
 
 const { Paragraph } = Typography;
-
+const NAME_LIST_LIMIT = 4000;
 class Match extends React.Component {
-  constructor(props) {
-    super(props);
-    let namesString = localStorage.getItem('names');
-    let names = [];
-    try {
-      names = namesString ? JSON.parse(namesString) : []
-    } catch (err) {
-      console.error('invalid names array loaded from storage');
-    }
-    this.state = { names: names };
-  }
+
 
   render() {
     return (
       <Card title="Match names to GBIF taxonomy" style={{ margin: '20px auto', maxWidth: 1000 }}>
         <Typography>
-          <Paragraph>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna.
-          </Paragraph>
-          <MatchNames names={this.state.names} history={this.props.history}></MatchNames>
+          <MatchNames names={this.props.names || []} setMatchedNames={this.props.setMatchedNames} history={this.props.history}></MatchNames>
         </Typography>
       </Card>
     )
@@ -41,14 +29,14 @@ const columns = [
     key: 'name',
     // render: text => <a href="javascript:;">{text}</a>,
     defaultSortOrder: 'descend',
-    sorter: (a, b) => a.name.localeCompare(b.name),
+    sorter: (a, b) => a.name && b.name ? a.name.localeCompare(b.name) : 1,
   },
   {
     title: 'Matched to',
     dataIndex: 'matchedName',
     key: 'matchedName',
     defaultSortOrder: 'descend',
-    sorter: (a, b) => a.matchedName.localeCompare(b.matchedName),
+    sorter: (a, b) => a.matchedName && b.matchedName ? a.matchedName.localeCompare(b.matchedName) : 1,
   },
   {
     title: 'Confidence',
@@ -67,13 +55,10 @@ class MatchNames extends React.Component {
 
   async componentDidMount() {
     this._isMount = true;
-    this.lookupNames(this.state.names);
+    this.lookupNames(this.props.names);
   }
 
-  next = () => {
-    localStorage.setItem('matchedNames', JSON.stringify(this.state.matches));
-    this.props.history.push('/explore')
-  }
+ 
 
   lookupName = async (name, callback) => {
     let response = await axios.get(`//api.gbif.org/v1/species/match?verbose=true&name=${name.name.replace(/_/g, ' ')}`);
@@ -82,6 +67,9 @@ class MatchNames extends React.Component {
   }
 
   lookupNames = nameList => {
+    if(nameList.length > NAME_LIST_LIMIT){
+      alert(`There is more than ${NAME_LIST_LIMIT} terminal nodes in the tree. Please use a smaller tree. `)
+    } else {
     let names = nameList.map(n => ({ name: n }));
     let that = this;
     async.eachLimit(names, 10, this.lookupName, function (err) {
@@ -93,7 +81,7 @@ class MatchNames extends React.Component {
           let noMatches = [];
           names.forEach(name => {
             name.matchedName = name.match.scientificName;
-            name.key = name.match.usageKey;
+            name.key = name.name;
             name.confidence = name.match.confidence;
             if (!name.matchedName) noMatches.push(name);
           });
@@ -101,17 +89,25 @@ class MatchNames extends React.Component {
         }
       }
     });
+    }
+    
   }
 
   render() {
+    const {setMatchedNames} = this.props;
     return (
       <div>
-        <Table columns={columns} dataSource={this.state.matches} />
+        <Table columns={columns} dataSource={this.state.matches} loading={this.state.loading}/>
         {this.state.noMatches && this.state.noMatches.length > 0 ? <Alert message={`${this.state.noMatches.length} results without a match - no data will be shown for this name`} type="error" /> : undefined}
-        <Button type="primary" disabled={this.state.loading} onClick={this.next} style={{marginTop: 20}}>Next</Button>
+        <Button type="primary" disabled={this.state.loading} loading={this.state.loading} onClick={() => {
+          setMatchedNames(this.state.matches);
+          this.props.history.push('/explore')
+        }} style={{marginTop: 20}}>Next</Button>
       </div>
+       
     )
   }
 }
 
-export default withRouter(Match);
+const mapContextToProps = ({ setNewick, setRawTree, setNames, setMatchedNames, rawTree, matchedNames, names }) => ({ setNewick , setRawTree, setNames, setMatchedNames, rawTree, matchedNames, names});
+export default withRouter(withContext(mapContextToProps)(Match));

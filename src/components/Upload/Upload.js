@@ -1,32 +1,35 @@
 import React from 'react';
-import { Button, Typography, Card, Input } from 'antd';
+import { Button,  Card, Input } from 'antd';
 import { withRouter } from 'react-router-dom';
 import parser from 'biojs-io-newick';
 import examples from './examples.json';
-
-const { Paragraph } = Typography;
+import Otl from '../OTL'
+import withContext from "../withContext"
 const { TextArea } = Input;
 
 class Upload extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { value: localStorage.getItem('newick') };
-  }
-
+ 
+ 
   startParsing = () => {
-    if (this.state.value) {
+ /*    try{ if (this.state.value) {
       localStorage.setItem('newick', this.state.value);
       // delete matches and tree here if user uploads a new newick file
-    }
+    }} catch(err){
+      console.log(err)
+    } */
+    const { setRawTree, setNames, newick } = this.props;
     this.setState({parsing: true});
-    this.parse(this.state.value)
+    this.parse(newick)
       .then(result => {
-        this.setState({tree: result, parsing: false});
-        localStorage.setItem('rawTree', JSON.stringify(result));
+        setRawTree(result)
+        this.setState({parsing: false});
+       // localStorage.setItem('rawTree', JSON.stringify(result));
         // extract names
         let names = [];
         this.extractNames(result, names);
-        localStorage.setItem('names', JSON.stringify(names));
+        setNames(names)
+        this.setState({names})
+//localStorage.setItem('names', JSON.stringify(names));
         this.props.history.push('/match')
       })
       .catch(err => this.setState({parsing: false}))
@@ -44,21 +47,20 @@ class Upload extends React.Component {
   }
 
   render() {
+    const { setNewick, newick } = this.props;
+
     return (
-      <Card title="Paste a NEWICK string" style={{ margin: '20px auto', width: 500 }}>
-        <Typography>
-          <Paragraph>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna.
-          </Paragraph>
-          <Paragraph><Button onClick={e => this.setState({ value: examples.acaia })}>Use Acacia example</Button></Paragraph>
-          <Paragraph>
-            <TextArea value={this.state.value} onChange={e => this.setState({value: e.target.value})} rows={10} placeholder="Enter your NEWICK string here" />
-          </Paragraph>
-          <Button type="primary" onClick={this.startParsing} disabled={!this.state.value}>Next</Button>
-        </Typography>
+      <Card title="NEWICK tree" style={{ margin: '20px auto', width: 500 }}>
+        
+          
+          <Otl setTree={setNewick}/>
+            <TextArea style={{marginBottom: '10px'}} value={newick} onChange={e =>  setNewick(e.target.value)} rows={10} placeholder="Enter your NEWICK string here" />
+          <Button type="primary" onClick={this.startParsing} disabled={!newick}>Next</Button> <Button onClick={e => setNewick(examples.acaia) }>Use Acacia example</Button>
       </Card>
     )
   }
 }
 
-export default withRouter(Upload);
+const mapContextToProps = ({ setNewick, setRawTree, setNames, setMatchedNames, newick }) => ({ setNewick , setRawTree, setNames, setMatchedNames, newick});
+
+export default withRouter(withContext(mapContextToProps)(Upload));
