@@ -82,7 +82,7 @@ getTreeFromOtl = async (node_id) => {
       <Row><Col flex="auto"></Col><Col><h3>OR</h3></Col><Col flex="auto"></Col></Row>
       <FormItem
         {...formItemLayout}
-        help={<span>Or try this example: <a onClick={()=> this.setState({node_id: "mrcaott71634ott117981"}) }>mrcaott71634ott117981</a></span>}
+        help={<span>Or try this example: <a href="/#" onClick={()=> this.setState({node_id: "mrcaott71634ott117981"}) }>mrcaott71634ott117981</a></span>}
       >
         <Input.Search 
             loading={loading}

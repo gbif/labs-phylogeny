@@ -6,7 +6,6 @@ import axios from 'axios';
 import withContext from "../withContext"
 // import qs from 'qs';
 
-const { Paragraph } = Typography;
 const NAME_LIST_LIMIT = 4000;
 class Match extends React.Component {
 

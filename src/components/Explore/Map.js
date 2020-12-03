@@ -1,9 +1,8 @@
 import React, { Component } from "react";
-import _ from "lodash";
 import mapboxgl from "mapbox-gl";
 import Color from 'color';
 import './map.css';
-import { Menu, Dropdown, Button,  message } from 'antd';
+import { Menu, Dropdown, Button } from 'antd';
 import {DownOutlined} from "@ant-design/icons"
 
 
