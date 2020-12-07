@@ -118,11 +118,12 @@ class PhylogenyTree extends React.Component {
 
   titleRender = (node) => {
     const ottid = getOtlId(node.other.originalNodeName);
+    const labelStyle = ottid ? { display: "inline-block", lineHeight: "16px" } : { display: "inline-block" };
     return (
       <div>
-        {node.other.branch_length && <div style={{fontSize: "8px", position: "absolute", bottom: "-12px", left: "-30px"}}>{Math.round( node.other.branch_length * 10000 + Number.EPSILON ) / 10000}</div>}
+        {node.other.branch_length && <div style={{fontSize: "8px", position: "absolute", bottom: "-12px", left: "-28px"}}>{Math.round( node.other.branch_length * 10000 + Number.EPSILON ) / 10000}</div>}
         <ColorBox node={node} highlighted={this.state.highlighted}></ColorBox>
-        <span style={{ display: "inline-block" }}>
+        <span style={labelStyle}>
           {node.title}
           <br />
           {ottid && (
@@ -156,6 +157,7 @@ class PhylogenyTree extends React.Component {
     );
 
     return (
+      <div className="phylo-tree">
       <Tree
         showLine={{ showLeafIcon: false }}
         checkable
@@ -170,7 +172,7 @@ class PhylogenyTree extends React.Component {
         titleRender={this.titleRender}
         height={vh - 108}
       />
-      /*  <Children>{this.renderNode(getTree(matchedNames, rawTree).tree)}</Children> */
+      </div>
     );
   }
 }
