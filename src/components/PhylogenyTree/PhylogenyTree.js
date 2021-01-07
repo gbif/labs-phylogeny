@@ -124,7 +124,7 @@ class PhylogenyTree extends React.Component {
         {node.other.branch_length && <div style={{fontSize: "8px", position: "absolute", bottom: "-12px", left: "-28px"}}>{Math.round( node.other.branch_length * 10000 + Number.EPSILON ) / 10000}</div>}
         <ColorBox node={node} highlighted={this.state.highlighted}></ColorBox>
         <span style={labelStyle}>
-          {node.title}
+          <span dangerouslySetInnerHTML={{__html: node.title}}></span>
           <br />
           {ottid && (
             <a

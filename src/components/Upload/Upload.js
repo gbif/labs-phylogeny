@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button,  Card, Input } from 'antd';
+import { Button,  Card, Input, Row } from 'antd';
 import { withRouter } from 'react-router-dom';
 import parser from 'biojs-io-newick';
 import examples from './examples.json';
@@ -54,8 +54,14 @@ class Upload extends React.Component {
         
           
           <Otl setTree={setNewick}/>
+          <span style={{color: 'rgba(0, 0, 0, 0.45)', display: 'block'}}>Try one of these examples:</span>
+         <Row justify="space-between" style={{marginBottom: '8px'}}>
+          <Button onClick={e => setNewick(examples.acaia) }>Acacia</Button> 
+          <Button onClick={e => setNewick(examples.hippocampus) }>BOLD Hippocampus</Button>
+          <Button onClick={e => setNewick(examples.alucita) }>BOLD Alucita</Button>
+          </Row>
             <TextArea style={{marginBottom: '10px'}} value={newick} onChange={e =>  setNewick(e.target.value)} rows={10} placeholder="Enter your NEWICK string here" />
-          <Button type="primary" onClick={this.startParsing} disabled={!newick}>Next</Button> <Button onClick={e => setNewick(examples.acaia) }>Use Acacia example</Button>
+          <Button type="primary" onClick={this.startParsing} disabled={!newick}>Next</Button> 
       </Card>
     )
   }
