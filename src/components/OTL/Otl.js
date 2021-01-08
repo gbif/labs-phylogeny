@@ -3,6 +3,7 @@ import { AutoComplete, Row, Col, Input, Form, Button, message } from "antd";
 import { withRouter } from "react-router-dom";
 import _ from "lodash";
 import axios from "axios";
+import qs from "qs";
 
 const { Option } = AutoComplete;
 const FormItem = Form.Item;
@@ -17,12 +18,19 @@ const formItemLayout = {
   },
 };
 
-class Upload extends React.Component {
+class Otl extends React.Component {
   constructor(props) {
     super(props);
     this.state = { names: [], node_id: "", loading: false };
   }
-
+  componentDidMount = () => {
+    const {location: {search}} = this.props;
+    const params = qs.parse(search, { ignoreQueryPrefix: true })
+    const ott_node_id = _.get(params, 'ott_node_id');
+    if(ott_node_id){
+      this.setState({node_id: ott_node_id}, ()=> this.getTreeFromOtl(ott_node_id))
+    }
+  }
   getData = async (value) => {
     let response = await axios.get(
       `//api.gbif.org/v1/species/suggest?q=${value}&datasetKey=d7dddbf4-2cf0-4f39-9b2a-bb099caae36c`
@@ -56,6 +64,10 @@ class Upload extends React.Component {
     }
   };
   getTreeFromOtl = async (node_id) => {
+    this.props.history.push({
+      pathname: this.props.location.path,
+      search: node_id ? `?ott_node_id=${node_id}` : null,
+    })
     try {
       this.setState({ loading: true });
 
@@ -121,6 +133,7 @@ class Upload extends React.Component {
             onChange={(e) => {
               this.setState({ node_id: e.currentTarget.value });
             }}
+            
             onSearch={this.getTreeFromOtl}
             allowClear
           />
@@ -137,4 +150,4 @@ class Upload extends React.Component {
   }
 }
 
-export default withRouter(Upload);
+export default withRouter(Otl);

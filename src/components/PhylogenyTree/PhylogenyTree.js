@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import _ from "lodash";
 import { Tree } from "antd";
 import withContext from "../withContext";
+import {LinkOutlined} from "@ant-design/icons"
 // Create a Wrapper component that'll render a <section> tag with some styles
 
 const Box = styled.span`
@@ -22,6 +23,12 @@ const getOtlId = (originalName) => {
   return mayBeAnOttId.match(/ott\d{3,}/) || null;
 };
 
+const getBoldBin = (originalName) => {
+  if (!originalName) {
+    return null;
+  }
+  return originalName.startsWith("BOLD%3A") ? originalName.replace("BOLD%3A", "BOLD:") : null;
+}
 function getTree(matchedNames, rawTree) {
   const nameMap = _.keyBy(matchedNames, "name");
   let nodeIdMap = {};
@@ -118,6 +125,7 @@ class PhylogenyTree extends React.Component {
 
   titleRender = (node) => {
     const ottid = getOtlId(node.other.originalNodeName);
+    const boldBin = getBoldBin(node.other.originalNodeName);
     const labelStyle = ottid ? { display: "inline-block", lineHeight: "16px" } : { display: "inline-block" };
     return (
       <div>
@@ -125,6 +133,23 @@ class PhylogenyTree extends React.Component {
         <ColorBox node={node} highlighted={this.state.highlighted}></ColorBox>
         <span style={labelStyle}>
           <span dangerouslySetInnerHTML={{__html: node.title}}></span>
+          {boldBin && (
+            <>
+            {" "}
+            <a
+              href={`https://www.boldsystems.org/index.php/Public_BarcodeCluster?clusteruri=${boldBin}`}
+              onClick={(e) => {
+                e.preventDefault();
+                window.open(
+                  `https://www.boldsystems.org/index.php/Public_BarcodeCluster?clusteruri=${boldBin}`
+                );
+              }}
+            >
+              <LinkOutlined />
+              
+            </a>
+            </>
+          )}
           <br />
           {ottid && (
             <a
@@ -140,6 +165,7 @@ class PhylogenyTree extends React.Component {
               {node.other.originalNodeName}
             </a>
           )}
+          
         </span>
       </div>
     );
