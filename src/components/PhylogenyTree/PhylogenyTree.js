@@ -136,7 +136,7 @@ class PhylogenyTree extends React.Component {
 
   onCheck = (checkedKeys, e) => {
     this.setState({ checkedKeys });
-    const { nodeIdMap, colorGroups } = this.state;
+    const { colorGroups } = this.state;
     let groups = colorGroups;
     console.log(e)
     const {node, checked} = e;
