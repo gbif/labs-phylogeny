@@ -35,7 +35,7 @@ class Explore extends React.Component {
     this.setState({shouldRefresh: true})
   }
 
-  onSelect = data => {
+ /*  onSelect = data => {
     //just list of keys
     let filtered = data.filter(x => typeof x.taxonKey !== 'undefined');
     let taxaKeys = filtered.slice(0,catCol.length).map((x, i) => ({
@@ -44,7 +44,28 @@ class Explore extends React.Component {
       key: x.key
     }));
     this.setState({selected: taxaKeys, totalSelected: filtered.length})
-  }
+  } */
+ 
+  onSelect = (groups, rest) => {
+    //just list of keys
+    let taxaKeys = [];
+    groups.forEach((data, i) => {
+      // let filtered = data.filter(x => typeof x.taxonKey !== 'undefined');
+      taxaKeys = [...taxaKeys, ...data.map((x) => ({
+      taxonKey: x.taxonKey,
+      color: catCol[i],
+      key: x.key
+    }))]
+    })
+
+    taxaKeys = [...taxaKeys, ...rest.filter(x => typeof x.taxonKey !== 'undefined').map((x, i) => ({
+      taxonKey: x.taxonKey,
+      color: catCol[groups.length+i],
+      key: x.key
+    }))]
+    
+    this.setState({selected: taxaKeys, totalSelected: taxaKeys.length})
+  } 
 
   render() {
     let shouldRefresh = false;

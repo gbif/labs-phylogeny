@@ -75,6 +75,12 @@ function ColorBox({ node, highlighted }) {
   return null;
 }
 
+function partition(array, isValid) {
+  return array.reduce(([pass, fail], elem) => {
+    return isValid(elem) ? [[...pass, elem], fail] : [pass, [...fail, elem]];
+  }, [[], []]);
+}
+
 class PhylogenyTree extends React.Component {
   constructor(props) {
     super(props);
@@ -86,20 +92,9 @@ class PhylogenyTree extends React.Component {
       autoExpandParent: false,
       highlighted: {},
       treeData: [],
+      colorGroups: []
     };
   }
-
-  onExpand = (expandedKeys) => {
-    this.setState({ expandedKeys });
-  };
-
-  onCheck = (checkedKeys) => {
-    this.setState({ checkedKeys });
-    const { nodeIdMap } = this.state;
-    if (this.props.onSelect) {
-      this.props.onSelect(checkedKeys.map((key) => nodeIdMap[key]));
-    }
-  };
   componentDidMount = () => {
     const { rawTree, matchedNames } = this.props;
     if(!rawTree || !matchedNames){
@@ -122,6 +117,48 @@ class PhylogenyTree extends React.Component {
       });
     }
   }
+
+  createGroups = (groups, checkedKeys) => {
+    const grouped = [];
+    const { nodeIdMap } = this.state;
+    let rest = checkedKeys;
+    groups.forEach(g => {
+      const [pass, fail] = partition(rest, (e) => e.startsWith(g));
+      rest = fail;
+      grouped.push([nodeIdMap[g], ...pass.map((key) => nodeIdMap[key])])
+    })
+    return [grouped, rest.map((key) => nodeIdMap[key])]
+  }
+
+  onExpand = (expandedKeys) => {
+    this.setState({ expandedKeys });
+  };
+
+  onCheck = (checkedKeys, e) => {
+    this.setState({ checkedKeys });
+    const { nodeIdMap, colorGroups } = this.state;
+    let groups = colorGroups;
+    console.log(e)
+    const {node, checked} = e;
+    if(checked && node.children){
+      groups.push(node.key)
+    } else if((!checked) && node.children){
+      groups = groups.filter(g => g !== node.key)
+    }
+    /* 
+    Get the selected higher taxa where alle leaves should be same color,
+    and the "loose" leaf nodes that are not in a group
+
+    */
+    const data = this.createGroups(groups, checkedKeys)
+    this.setState({checkedKeys, colorGroups: groups}, () => {
+      if (this.props.onSelect) {
+        this.props.onSelect(data[0], data[1]);
+      }
+    })
+    
+  };
+
 
   titleRender = (node) => {
     const ottid = getOtlId(node.other.originalNodeName);

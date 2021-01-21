@@ -73,7 +73,7 @@ class Map extends Component {
 
   removeLayers = prev => {
     prev = prev || [];
-    prev.forEach(l => {
+    prev.filter(x => typeof x.taxonKey !== 'undefined').forEach(l => {
       let layerName = "occurrences_" + l.taxonKey;
       var layer = this.map.getSource(layerName);
       if (layer) {
@@ -88,7 +88,8 @@ class Map extends Component {
     let addLayer = this.addLayer;
     // ['#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5','#d9d9d9','#bc80bd']
     // let catCol = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a'];
-    selected.forEach(l => {
+    selected.filter(x => typeof x.taxonKey !== 'undefined').forEach(l => {
+      console.log(l)
       addLayer(l.taxonKey, l.color)
     });
   }
