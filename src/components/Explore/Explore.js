@@ -76,7 +76,7 @@ class Explore extends React.Component {
     return (
       <SplitPane split="vertical" minSize={300} defaultSize={700} style={{overflow: 'hidden', height: 'calc(100vh - 68px)'}} onDragFinished={this.refreshSizes}>
         {/* <Phylogeny setTaxonKeys={this.setTaxonKeys} /> */}
-        <Card style={{ margin: 20}}>
+        <Card style={{ margin: 20}} bodyStyle={{padding: 10}}>
           <PhylogenyTree onSelect={this.onSelect} highlighted={this.state.selected}></PhylogenyTree>
         </Card>
         {this.state.showMap ? <Map shouldRefresh={shouldRefresh} selected={this.state.selected} max={catCol.length} totalSelected={this.state.totalSelected}></Map> : <div>Loading</div>}

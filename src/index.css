@@ -73,7 +73,9 @@ border-color: transparent;
 }
 
 
-
+.filter-node {
+  color: #f50 !important
+}
 /* .phylo-tree .ant-tree-checkbox-inner {
     position: relative;
     top: 5px;

@@ -2,10 +2,11 @@ import React from "react";
 import styled from "styled-components";
 import { withRouter } from 'react-router-dom';
 import _ from "lodash";
-import { Tree } from "antd";
+import { Tree, AutoComplete } from "antd";
 import withContext from "../withContext";
 import {LinkOutlined} from "@ant-design/icons"
 // Create a Wrapper component that'll render a <section> tag with some styles
+const Option = AutoComplete.Option;
 
 const Box = styled.span`
   width: 1em;
@@ -92,8 +93,14 @@ class PhylogenyTree extends React.Component {
       autoExpandParent: false,
       highlighted: {},
       treeData: [],
-      colorGroups: []
+      colorGroups: [],
+      searchList: [],
+      searchValue: '',
+      filterTreeNodeKey: null
     };
+
+    this.treeRef = React.createRef();
+
   }
   componentDidMount = () => {
     const { rawTree, matchedNames } = this.props;
@@ -103,6 +110,7 @@ class PhylogenyTree extends React.Component {
         const processedTree = getTree(matchedNames, rawTree);
     this.setState({
       nodeIdMap: processedTree.nodeIdMap,
+      searchList: Object.keys(processedTree.nodeIdMap).filter(key => processedTree.nodeIdMap[key].title).map(key => ({ value: key, label: processedTree.nodeIdMap[key].title})),
       treeData: [processedTree.tree],
       expandedKeys: Object.keys(processedTree.nodeIdMap),
     });
@@ -131,7 +139,7 @@ class PhylogenyTree extends React.Component {
   }
 
   onExpand = (expandedKeys) => {
-    this.setState({ expandedKeys });
+    this.setState({ expandedKeys, autoExpandParent: false });
   };
 
   onCheck = (checkedKeys, e) => {
@@ -159,15 +167,25 @@ class PhylogenyTree extends React.Component {
     
   };
 
+  onSelect = (key, e) => {
+
+    let tmp = document.createElement("DIV");
+    tmp.innerHTML = e.label;
+    const searchValue = tmp.textContent || tmp.innerText || "";
+
+    this.setState({searchValue, filterTreeNodeKey: key})
+    this.treeRef.current.scrollTo({key, align: 'top', offset: 24})
+  };
 
   titleRender = (node) => {
     const ottid = getOtlId(node.other.originalNodeName);
     const boldBin = getBoldBin(node.other.originalNodeName);
     const labelStyle = ottid ? { display: "inline-block", lineHeight: "16px" } : { display: "inline-block" };
+  
     return (
       <div>
         {node.other.branch_length && <div style={{fontSize: "8px", position: "absolute", bottom: "-12px", left: "-28px"}}>{Math.round( node.other.branch_length * 10000 + Number.EPSILON ) / 10000}</div>}
-        <ColorBox node={node} highlighted={this.state.highlighted}></ColorBox>
+        <ColorBox node={node} highlighted={this.state.highlighted}></ColorBox> 
         <span style={labelStyle}>
           <span dangerouslySetInnerHTML={{__html: node.title}}></span>
           {boldBin && (
@@ -213,6 +231,9 @@ class PhylogenyTree extends React.Component {
       autoExpandParent,
       checkedKeys,
       treeData,
+      searchList,
+      searchValue,
+      filterTreeNodeKey
     } = this.state;
     const vh = Math.max(
       document.documentElement.clientHeight || 0,
@@ -221,7 +242,30 @@ class PhylogenyTree extends React.Component {
 
     return (
       <div className="phylo-tree">
+{/*       <Search style={{ marginBottom: 8 }} placeholder="Search" onChange={this.onChange} allowClear/>
+ */}      <AutoComplete
+       
+        style={{
+          width: 400,
+        }}
+        value={searchValue}
+        onChange={searchValue => {
+          if(!searchValue){
+            this.setState({searchValue, filterTreeNodeKey: null})
+            
+          } else {
+            this.setState({searchValue}) 
+          }
+          
+        }}
+        onSelect={this.onSelect}
+        placeholder="Search tree"
+        allowClear
+      > 
+      {searchList.filter(i => i.label.indexOf(searchValue) > -1).map(o => <Option value={o.value} label={o.label}><span dangerouslySetInnerHTML={{__html: o.label}}></span> </Option>)}
+      </AutoComplete>
       <Tree
+        ref={this.treeRef}
         showLine={{ showLeafIcon: false }}
         checkable
         selectable={false}
@@ -233,7 +277,10 @@ class PhylogenyTree extends React.Component {
         checkedKeys={checkedKeys}
         treeData={treeData}
         titleRender={this.titleRender}
-        height={vh - 108}
+        filterTreeNode={(node) => {
+          return node.key === filterTreeNodeKey;
+        }}
+        height={vh - 140}
       />
       </div>
     );

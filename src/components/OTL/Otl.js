@@ -114,7 +114,7 @@ class Otl extends React.Component {
           {...formItemLayout}
           help={
             <span>
-              Or try this example:{" "}
+              Or an example:{" "}
               <Button
                 type="link"
                 onClick={() =>
@@ -123,6 +123,17 @@ class Otl extends React.Component {
               >
                 mrcaott30642ott447374
               </Button>
+
+              <Button
+                type="link"
+                onClick={() =>
+                  this.setState({ node_id: "ott852221" })
+                }
+              >
+                ott852221
+              </Button>
+
+              
             </span>
           }
         >
