@@ -8,9 +8,8 @@ import _ from "lodash"
 // import qs from 'qs';
 
 const NAME_LIST_LIMIT = 4000;
+
 class Match extends React.Component {
-
-
   render() {
     return (
       <Card title="Match names to GBIF taxonomy" style={{ margin: '20px auto', maxWidth: 1000 }}>
@@ -59,12 +58,12 @@ class MatchNames extends React.Component {
     this.lookupNames(this.props.names);
   }
 
- 
+
 
   lookupName = async (name, callback) => {
     let response = await axios.get(`//api.gbif.org/v1/species/match?verbose=true&name=${name.name.replace(/_/g, ' ')}`);
     name.match = response.data;
-    if(name.match.rank === "UNRANKED"){
+    if (name.match.rank === "UNRANKED") {
       let formattedResponse = await axios.get(`//www.gbif.org/api/species/${name.match.usageKey}/name`);
       name.match.formattedName = _.get(formattedResponse, "data.n");
     }
@@ -72,48 +71,48 @@ class MatchNames extends React.Component {
   }
 
   lookupNames = nameList => {
-    if(nameList.length > NAME_LIST_LIMIT){
+    if (nameList.length > NAME_LIST_LIMIT) {
       alert(`There is more than ${NAME_LIST_LIMIT} terminal nodes in the tree. Please use a smaller tree. `)
     } else {
-    let names = nameList.map(n => ({ name: n }));
-    let that = this;
-    async.eachLimit(names, 10, this.lookupName, function (err) {
-      if (err) {
-        // TODO inform the user that not everything could be matched
-        console.log(err);
-      } else {
-        if (that._isMount) {
-          let noMatches = [];
-          names.forEach(name => {
-            name.matchedName = name.match.formattedName || name.match.scientificName;
-            name.usageKey = name.match.usageKey;
-            name.key = name.name;
-            name.confidence = name.match.confidence;
-            if (!name.matchedName) noMatches.push(name);
-          });
-          that.setState({ matches: names, noMatches: noMatches, loading: false });
+      let names = nameList.map(n => ({ name: n }));
+      let that = this;
+      async.eachLimit(names, 10, this.lookupName, function (err) {
+        if (err) {
+          // TODO inform the user that not everything could be matched
+          console.log(err);
+        } else {
+          if (that._isMount) {
+            let noMatches = [];
+            names.forEach(name => {
+              name.matchedName = name.match.formattedName || name.match.scientificName;
+              name.usageKey = name.match.usageKey;
+              name.key = name.name;
+              name.confidence = name.match.confidence;
+              if (!name.matchedName) noMatches.push(name);
+            });
+            that.setState({ matches: names, noMatches: noMatches, loading: false });
+          }
         }
-      }
-    });
+      });
     }
-    
+
   }
 
   render() {
-    const {setMatchedNames} = this.props;
+    const { setMatchedNames } = this.props;
     return (
       <div>
-        <Table columns={columns} dataSource={this.state.matches} loading={this.state.loading}/>
+        <Table columns={columns} dataSource={this.state.matches} loading={this.state.loading} />
         {this.state.noMatches && this.state.noMatches.length > 0 ? <Alert message={`${this.state.noMatches.length} results without a match - no data will be shown for this name`} type="error" /> : undefined}
         <Button type="primary" disabled={this.state.loading} loading={this.state.loading} onClick={() => {
           setMatchedNames(this.state.matches);
           this.props.history.push('/explore')
-        }} style={{marginTop: 20}}>Next</Button>
+        }} style={{ marginTop: 20 }}>Next</Button>
       </div>
-       
+
     )
   }
 }
 
-const mapContextToProps = ({ setNewick, setRawTree, setNames, setMatchedNames, rawTree, matchedNames, names }) => ({ setNewick , setRawTree, setNames, setMatchedNames, rawTree, matchedNames, names});
+const mapContextToProps = ({ setNewick, setRawTree, setNames, setMatchedNames, rawTree, matchedNames, names }) => ({ setNewick, setRawTree, setNames, setMatchedNames, rawTree, matchedNames, names });
 export default withRouter(withContext(mapContextToProps)(Match));
