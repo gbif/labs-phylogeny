@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 import _ from "lodash";
 import { Tree, AutoComplete } from "antd";
 import withContext from "../withContext";
-import {LinkOutlined} from "@ant-design/icons"
+import { LinkOutlined } from "@ant-design/icons"
 // Create a Wrapper component that'll render a <section> tag with some styles
 const Option = AutoComplete.Option;
 
@@ -30,6 +30,7 @@ const getBoldBin = (originalName) => {
   }
   return originalName.startsWith("BOLD%3A") ? originalName.replace("BOLD%3A", "BOLD:") : null;
 }
+
 function getTree(matchedNames, rawTree) {
   const nameMap = _.keyBy(matchedNames, "name");
   let nodeIdMap = {};
@@ -104,16 +105,16 @@ class PhylogenyTree extends React.Component {
   }
   componentDidMount = () => {
     const { rawTree, matchedNames } = this.props;
-    if(!rawTree || !matchedNames){
-        this.props.history.push('/phylogeny')
+    if (!rawTree || !matchedNames) {
+      this.props.history.push('/phylogeny')
     } else {
-        const processedTree = getTree(matchedNames, rawTree);
-    this.setState({
-      nodeIdMap: processedTree.nodeIdMap,
-      searchList: Object.keys(processedTree.nodeIdMap).filter(key => processedTree.nodeIdMap[key].title).map(key => ({ value: key, label: processedTree.nodeIdMap[key].title})),
-      treeData: [processedTree.tree],
-      expandedKeys: Object.keys(processedTree.nodeIdMap),
-    });
+      const processedTree = getTree(matchedNames, rawTree);
+      this.setState({
+        nodeIdMap: processedTree.nodeIdMap,
+        searchList: Object.keys(processedTree.nodeIdMap).filter(key => processedTree.nodeIdMap[key].title).map(key => ({ value: key, label: processedTree.nodeIdMap[key].title })),
+        treeData: [processedTree.tree],
+        expandedKeys: Object.keys(processedTree.nodeIdMap),
+      });
     }
 
   };
@@ -147,10 +148,10 @@ class PhylogenyTree extends React.Component {
     const { colorGroups } = this.state;
     let groups = colorGroups;
     console.log(e)
-    const {node, checked} = e;
-    if(checked && node.children){
+    const { node, checked } = e;
+    if (checked && node.children) {
       groups.push(node.key)
-    } else if((!checked) && node.children){
+    } else if ((!checked) && node.children) {
       groups = groups.filter(g => g !== node.key)
     }
     /* 
@@ -159,12 +160,12 @@ class PhylogenyTree extends React.Component {
 
     */
     const data = this.createGroups(groups, checkedKeys)
-    this.setState({checkedKeys, colorGroups: groups}, () => {
+    this.setState({ checkedKeys, colorGroups: groups }, () => {
       if (this.props.onSelect) {
         this.props.onSelect(data[0], data[1]);
       }
     })
-    
+
   };
 
   onSelect = (key, e) => {
@@ -173,36 +174,36 @@ class PhylogenyTree extends React.Component {
     tmp.innerHTML = e.label;
     const searchValue = tmp.textContent || tmp.innerText || "";
 
-    this.setState({searchValue, filterTreeNodeKey: key})
-    this.treeRef.current.scrollTo({key, align: 'top', offset: 24})
+    this.setState({ searchValue, filterTreeNodeKey: key })
+    this.treeRef.current.scrollTo({ key, align: 'top', offset: 24 })
   };
 
   titleRender = (node) => {
     const ottid = getOtlId(node.other.originalNodeName);
     const boldBin = getBoldBin(node.other.originalNodeName);
     const labelStyle = ottid ? { display: "inline-block", lineHeight: "16px" } : { display: "inline-block" };
-  
+
     return (
       <div>
-        {node.other.branch_length && <div style={{fontSize: "8px", position: "absolute", bottom: "-12px", left: "-28px"}}>{Math.round( node.other.branch_length * 10000 + Number.EPSILON ) / 10000}</div>}
-        <ColorBox node={node} highlighted={this.state.highlighted}></ColorBox> 
+        {node.other.branch_length && <div style={{ fontSize: "8px", position: "absolute", bottom: "-12px", left: "-28px" }}>{Math.round(node.other.branch_length * 10000 + Number.EPSILON) / 10000}</div>}
+        <ColorBox node={node} highlighted={this.state.highlighted}></ColorBox>
         <span style={labelStyle}>
-          <span dangerouslySetInnerHTML={{__html: node.title}}></span>
+          <span dangerouslySetInnerHTML={{ __html: node.title }}></span>
           {boldBin && (
             <>
-            {" "}
-            <a
-              href={`https://www.boldsystems.org/index.php/Public_BarcodeCluster?clusteruri=${boldBin}`}
-              onClick={(e) => {
-                e.preventDefault();
-                window.open(
-                  `https://www.boldsystems.org/index.php/Public_BarcodeCluster?clusteruri=${boldBin}`
-                );
-              }}
-            >
-              <LinkOutlined />
-              
-            </a>
+              {" "}
+              <a
+                href={`https://www.boldsystems.org/index.php/Public_BarcodeCluster?clusteruri=${boldBin}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.open(
+                    `https://www.boldsystems.org/index.php/Public_BarcodeCluster?clusteruri=${boldBin}`
+                  );
+                }}
+              >
+                <LinkOutlined />
+
+              </a>
             </>
           )}
           <br />
@@ -220,7 +221,7 @@ class PhylogenyTree extends React.Component {
               {node.other.originalNodeName}
             </a>
           )}
-          
+
         </span>
       </div>
     );
@@ -242,46 +243,46 @@ class PhylogenyTree extends React.Component {
 
     return (
       <div className="phylo-tree">
-{/*       <Search style={{ marginBottom: 8 }} placeholder="Search" onChange={this.onChange} allowClear/>
+        {/*       <Search style={{ marginBottom: 8 }} placeholder="Search" onChange={this.onChange} allowClear/>
  */}      <AutoComplete
-       
-        style={{
-          width: 400,
-        }}
-        value={searchValue}
-        onChange={searchValue => {
-          if(!searchValue){
-            this.setState({searchValue, filterTreeNodeKey: null})
-            
-          } else {
-            this.setState({searchValue}) 
-          }
-          
-        }}
-        onSelect={this.onSelect}
-        placeholder="Search tree"
-        allowClear
-      > 
-      {searchList.filter(i => i.label.indexOf(searchValue) > -1).map(o => <Option value={o.value} label={o.label}><span dangerouslySetInnerHTML={{__html: o.label}}></span> </Option>)}
-      </AutoComplete>
-      <Tree
-        ref={this.treeRef}
-        showLine={{ showLeafIcon: false }}
-        checkable
-        selectable={false}
-        defaultExpandAll
-        onExpand={this.onExpand}
-        expandedKeys={expandedKeys}
-        autoExpandParent={autoExpandParent}
-        onCheck={this.onCheck}
-        checkedKeys={checkedKeys}
-        treeData={treeData}
-        titleRender={this.titleRender}
-        filterTreeNode={(node) => {
-          return node.key === filterTreeNodeKey;
-        }}
-        height={vh - 140}
-      />
+
+          style={{
+            width: 400,
+          }}
+          value={searchValue}
+          onChange={searchValue => {
+            if (!searchValue) {
+              this.setState({ searchValue, filterTreeNodeKey: null })
+
+            } else {
+              this.setState({ searchValue })
+            }
+
+          }}
+          onSelect={this.onSelect}
+          placeholder="Search tree"
+          allowClear
+        >
+          {searchList.filter(i => i.label.indexOf(searchValue) > -1).map(o => <Option value={o.value} label={o.label}><span dangerouslySetInnerHTML={{ __html: o.label }}></span> </Option>)}
+        </AutoComplete>
+        <Tree
+          ref={this.treeRef}
+          showLine={{ showLeafIcon: false }}
+          checkable
+          selectable={false}
+          defaultExpandAll
+          onExpand={this.onExpand}
+          expandedKeys={expandedKeys}
+          autoExpandParent={autoExpandParent}
+          onCheck={this.onCheck}
+          checkedKeys={checkedKeys}
+          treeData={treeData}
+          titleRender={this.titleRender}
+          filterTreeNode={(node) => {
+            return node.key === filterTreeNodeKey;
+          }}
+          height={vh - 140}
+        />
       </div>
     );
   }
