@@ -58,8 +58,6 @@ class MatchNames extends React.Component {
     this.lookupNames(this.props.names);
   }
 
-
-
   lookupName = async (name, callback) => {
     let response = await axios.get(`//api.gbif.org/v1/species/match?verbose=true&name=${name.name.replace(/_/g, ' ')}`);
     name.match = response.data;
@@ -95,7 +93,6 @@ class MatchNames extends React.Component {
         }
       });
     }
-
   }
 
   render() {
