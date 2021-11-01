@@ -3,7 +3,7 @@ import { Button, Card, Input, Row } from 'antd';
 import { withRouter } from 'react-router-dom';
 import parser from 'biojs-io-newick';
 import examples from './examples.json';
-import Otl from '../OTL'
+import Otl from './OTL'
 import withContext from "../withContext"
 const { TextArea } = Input;
 
@@ -43,8 +43,6 @@ class Upload extends React.Component {
 
     return (
       <Card title="NEWICK tree" style={{ margin: '20px auto', width: 500 }}>
-
-
         <Otl setTree={setNewick} />
         <span style={{ color: 'rgba(0, 0, 0, 0.45)', display: 'block' }}>Try one of these examples:</span>
         <Row justify="space-between" style={{ marginBottom: '8px' }}>
