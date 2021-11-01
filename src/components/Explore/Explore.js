@@ -16,7 +16,8 @@ let catCol = ['#FF6633', '#FF33FF', '#FFFF99', '#00B3E6',
 '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680', 
 '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
 '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3', 
-'#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF']
+'#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
+
 class Explore extends React.Component {
   constructor(props) {
     super(props);
