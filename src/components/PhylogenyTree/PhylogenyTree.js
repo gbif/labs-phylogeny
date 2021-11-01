@@ -157,7 +157,6 @@ class PhylogenyTree extends React.Component {
     /* 
     Get the selected higher taxa where alle leaves should be same color,
     and the "loose" leaf nodes that are not in a group
-
     */
     const data = this.createGroups(groups, checkedKeys)
     this.setState({ checkedKeys, colorGroups: groups }, () => {
