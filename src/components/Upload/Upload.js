@@ -15,13 +15,11 @@ class Upload extends React.Component {
       .then(result => {
         setRawTree(result)
         this.setState({ parsing: false });
-        // localStorage.setItem('rawTree', JSON.stringify(result));
         // extract names
         let names = [];
         this.extractNames(result, names);
         setNames(names)
         this.setState({ names })
-        //localStorage.setItem('names', JSON.stringify(names));
         this.props.history.push('/match')
       })
       .catch(err => this.setState({ parsing: false }))
