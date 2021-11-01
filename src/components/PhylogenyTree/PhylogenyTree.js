@@ -101,8 +101,8 @@ class PhylogenyTree extends React.Component {
     };
 
     this.treeRef = React.createRef();
-
   }
+
   componentDidMount = () => {
     const { rawTree, matchedNames } = this.props;
     if (!rawTree || !matchedNames) {
@@ -168,7 +168,6 @@ class PhylogenyTree extends React.Component {
   };
 
   onSelect = (key, e) => {
-
     let tmp = document.createElement("DIV");
     tmp.innerHTML = e.label;
     const searchValue = tmp.textContent || tmp.innerText || "";
@@ -201,7 +200,6 @@ class PhylogenyTree extends React.Component {
                 }}
               >
                 <LinkOutlined />
-
               </a>
             </>
           )}
@@ -220,11 +218,11 @@ class PhylogenyTree extends React.Component {
               {node.other.originalNodeName}
             </a>
           )}
-
         </span>
       </div>
     );
   };
+
   render() {
     const {
       expandedKeys,
@@ -242,12 +240,8 @@ class PhylogenyTree extends React.Component {
 
     return (
       <div className="phylo-tree">
-        {/*       <Search style={{ marginBottom: 8 }} placeholder="Search" onChange={this.onChange} allowClear/>
- */}      <AutoComplete
-
-          style={{
-            width: 400,
-          }}
+        <AutoComplete
+          style={{ width: 400 }}
           value={searchValue}
           onChange={searchValue => {
             if (!searchValue) {
@@ -256,7 +250,6 @@ class PhylogenyTree extends React.Component {
             } else {
               this.setState({ searchValue })
             }
-
           }}
           onSelect={this.onSelect}
           placeholder="Search tree"
@@ -302,4 +295,5 @@ const mapContextToProps = ({
   rawTree,
   matchedNames,
 });
+
 export default withRouter(withContext(mapContextToProps)(PhylogenyTree));
