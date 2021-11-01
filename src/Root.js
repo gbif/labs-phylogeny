@@ -10,14 +10,6 @@ import Explore from './components/Explore';
 const Step = Steps.Step;
 
 class Root extends React.Component {
-  // constructor(props) {
-  //   super(props);
-  //   // let solr = await axios.get(this.state.endpoints.SOLR + '?' + qs.stringify(test.v1));
-  //   this.state = {
-  //     step: 3
-  //   };
-  // }
-
   setStep = step => {
     this.props.history.push(step)
   }

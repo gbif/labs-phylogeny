@@ -10,17 +10,16 @@ class ContextProvider extends React.Component {
     setNewick: (newick) => {
       this.setState({ newick });
     },
-    setRawTree : (rawTree) => {
+    setRawTree: (rawTree) => {
       this.setState({ rawTree });
     },
-    setNames : (names) => {
+    setNames: (names) => {
       this.setState({ names });
     },
-    setMatchedNames : (matchedNames) => {
+    setMatchedNames: (matchedNames) => {
       this.setState({ matchedNames });
     }
   };
-
 
   render() {
     return (
