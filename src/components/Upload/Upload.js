@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button,  Card, Input, Row } from 'antd';
+import { Button, Card, Input, Row } from 'antd';
 import { withRouter } from 'react-router-dom';
 import parser from 'biojs-io-newick';
 import examples from './examples.json';
@@ -8,31 +8,23 @@ import withContext from "../withContext"
 const { TextArea } = Input;
 
 class Upload extends React.Component {
- 
- 
   startParsing = () => {
- /*    try{ if (this.state.value) {
-      localStorage.setItem('newick', this.state.value);
-      // delete matches and tree here if user uploads a new newick file
-    }} catch(err){
-      console.log(err)
-    } */
     const { setRawTree, setNames, newick } = this.props;
-    this.setState({parsing: true});
+    this.setState({ parsing: true });
     this.parse(newick)
       .then(result => {
         setRawTree(result)
-        this.setState({parsing: false});
-       // localStorage.setItem('rawTree', JSON.stringify(result));
+        this.setState({ parsing: false });
+        // localStorage.setItem('rawTree', JSON.stringify(result));
         // extract names
         let names = [];
         this.extractNames(result, names);
         setNames(names)
-        this.setState({names})
-//localStorage.setItem('names', JSON.stringify(names));
+        this.setState({ names })
+        //localStorage.setItem('names', JSON.stringify(names));
         this.props.history.push('/match')
       })
-      .catch(err => this.setState({parsing: false}))
+      .catch(err => this.setState({ parsing: false }))
   }
 
   extractNames = (o, names) => {
@@ -51,22 +43,22 @@ class Upload extends React.Component {
 
     return (
       <Card title="NEWICK tree" style={{ margin: '20px auto', width: 500 }}>
-        
-          
-          <Otl setTree={setNewick}/>
-          <span style={{color: 'rgba(0, 0, 0, 0.45)', display: 'block'}}>Try one of these examples:</span>
-         <Row justify="space-between" style={{marginBottom: '8px'}}>
-          <Button onClick={e => setNewick(examples.acaia) }>Acacia</Button> 
-          <Button onClick={e => setNewick(examples.hippocampus) }>BOLD Hippocampus</Button>
-          <Button onClick={e => setNewick(examples.alucita) }>BOLD Alucita</Button>
-          </Row>
-            <TextArea style={{marginBottom: '10px'}} value={newick} onChange={e =>  setNewick(e.target.value)} rows={10} placeholder="Enter your NEWICK string here" />
-          <Button type="primary" onClick={this.startParsing} disabled={!newick}>Next</Button> 
+
+
+        <Otl setTree={setNewick} />
+        <span style={{ color: 'rgba(0, 0, 0, 0.45)', display: 'block' }}>Try one of these examples:</span>
+        <Row justify="space-between" style={{ marginBottom: '8px' }}>
+          <Button onClick={e => setNewick(examples.acaia)}>Acacia</Button>
+          <Button onClick={e => setNewick(examples.hippocampus)}>BOLD Hippocampus</Button>
+          <Button onClick={e => setNewick(examples.alucita)}>BOLD Alucita</Button>
+        </Row>
+        <TextArea style={{ marginBottom: '10px' }} value={newick} onChange={e => setNewick(e.target.value)} rows={10} placeholder="Enter your NEWICK string here" />
+        <Button type="primary" onClick={this.startParsing} disabled={!newick}>Next</Button>
       </Card>
     )
   }
 }
 
-const mapContextToProps = ({ setNewick, setRawTree, setNames, setMatchedNames, newick }) => ({ setNewick , setRawTree, setNames, setMatchedNames, newick});
+const mapContextToProps = ({ setNewick, setRawTree, setNames, setMatchedNames, newick }) => ({ setNewick, setRawTree, setNames, setMatchedNames, newick });
 
 export default withRouter(withContext(mapContextToProps)(Upload));
