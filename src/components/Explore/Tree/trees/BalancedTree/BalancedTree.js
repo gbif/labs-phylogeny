@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StyledTree } from './styles2';
 import acacia from './simple2.json';
 import './tree.css';
-import { Button, Radio } from 'antd';
+import { Radio } from 'antd';
 
 const defaultFontSize = 12;
 const defaultMultiplier = 1000;

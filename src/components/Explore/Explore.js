@@ -26,7 +26,6 @@ https://github.com/mapbox/tile-decorator
 
 
 import React from "react";
-import { Card } from "antd";
 import { withRouter } from "react-router-dom";
 import PhylogenyTree from "./Tree";
 import Map from './Map';
