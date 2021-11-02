@@ -1,0 +1,44 @@
+{
+  "name": "Root",
+  "children": [
+    {
+      "name": "a",
+      "branch_length": 1,
+      "children": [
+        {
+          "name": "Ursus maritimus",
+          "branch_length": 1
+        },
+        {
+          "name": "",
+          "branch_length": 1,
+          "children": [
+            {
+              "name": "Sus scrofa",
+              "branch_length": 1
+            },
+            {
+              "name": "a",
+              "branch_length": 1,
+              "children": [
+                {
+                  "name": "Tursiops",
+                  "branch_length": 1
+                },
+                {
+                  "name": "Hippopotamus",
+                  "branch_length": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Gorilla",
+      "branch_length": 1
+    }
+  ],
+  "branch_length": 1
+}

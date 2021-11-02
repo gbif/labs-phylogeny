@@ -29,7 +29,7 @@ class Map extends Component {
         </Menu.Item>
       </Menu>
     );
-    this.state = { selected: props.selected || [], menu, baseLayer: 'light-v10' };
+    this.state = { selected: props.selected || {}, menu, baseLayer: 'light-v10' };
   }
 
   selectBaseLayer = layer => {
@@ -71,10 +71,15 @@ class Map extends Component {
     this.addLayers(next);
   }
 
+  getLayersAsArray = (selected) => {
+    return Object.keys(selected).map(x => selected[x]);
+  }
+
   removeLayers = prev => {
-    prev = prev || [];
-    prev.filter(x => typeof x.taxonKey !== 'undefined').forEach(l => {
-      let layerName = "occurrences_" + l.taxonKey;
+    prev = prev || {};
+    let list = this.getLayersAsArray(prev);
+    list.filter(x => x.taxonKeys && x.taxonKeys.length > 0).forEach(l => {
+      let layerName = "occurrences_" + l.layerName;
       var layer = this.map.getSource(layerName);
       if (layer) {
         this.map.removeLayer(layerName);
@@ -84,23 +89,24 @@ class Map extends Component {
   }
 
   addLayers = selected => {
-    selected = selected || [];
+    selected = selected || {};
+    let list = this.getLayersAsArray(selected);
     let addLayer = this.addLayer;
     // ['#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5','#d9d9d9','#bc80bd']
     // let catCol = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a'];
-    selected.filter(x => typeof x.taxonKey !== 'undefined').forEach(l => {
-      console.log(l)
-      addLayer(l.taxonKey, l.color)
+    list.filter(x => x.taxonKeys && x.taxonKeys.length > 0).forEach(x => {
+      addLayer(x)
     });
   }
 
-  addLayer = (taxonKey, color) => {
-    // taxonKey = 2979474;
-    var tileString = "https://api.gbif.org/v2/map/occurrence/density/{z}/{x}/{y}.mvt?srs=EPSG:3857&taxonKey=" + taxonKey;
+  addLayer = (layer) => {
+    const query = layer.visibleTaxonKeys.reduce((str, key) => str += `&taxonKey=${key}`, '');
+    var tileString = "https://api.gbif.org/v2/map/occurrence/adhoc/{z}/{x}/{y}.mvt?style=scaled.circles&mode=GEO_CENTROID&occurrenceStatus=present&srs=EPSG%3A3857&squareSize=512" + query;
+    // var tileString = "https://api.gbif.org/v2/map/occurrence/density/{z}/{x}/{y}.mvt?srs=EPSG:3857" + query;
     // var tileString = "https://api.gbif.org/v2/map/occurrence/density/{z}/{x}/{y}.mvt?srs=EPSG:3857&bin=hex&hexPerTile=50&taxonKey=2435098";
     this.map.addLayer(
       {
-        id: "occurrences_" + taxonKey,
+        id: "occurrences_" + layer.layerName,
         type: "circle",
         source: {
           type: "vector",
@@ -115,13 +121,13 @@ class Map extends Component {
             stops: [[0, 2], [10, 3], [100, 5], [1000, 8], [10000, 15]]
           },
           // color circles by ethnicity, using data-driven styles
-          "circle-color": color,
+          "circle-color": layer.color,
           // "circle-opacity": {
           //   property: "total",
           //   type: "interval",
           //   stops: [[0, 1], [10, 0.8], [100, 0.7], [1000, 0.6], [10000, 0.6]]
           // },
-          "circle-stroke-color": Color(color).darken(0.3).hex(),
+          "circle-stroke-color": Color(layer.color).darken(0.3).hex(),
           "circle-stroke-width": 1
         }
       }

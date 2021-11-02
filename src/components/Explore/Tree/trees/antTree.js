@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { withRouter } from 'react-router-dom';
 import _ from "lodash";
 import { Tree, AutoComplete } from "antd";
-import withContext from "../withContext";
+import withContext from "../../../withContext";
 import { LinkOutlined } from "@ant-design/icons"
 // Create a Wrapper component that'll render a <section> tag with some styles
 const Option = AutoComplete.Option;

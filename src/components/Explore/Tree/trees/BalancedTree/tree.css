@@ -1,0 +1,16 @@
+.treeArea {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.tree-controls {
+  border-bottom: 1px solid #ddd;
+  flex: 0 0 auto;
+  padding: 12px;
+}
+
+.tree-tree {
+  padding: 24px 0;
+  flex: 1 1 auto;
+}
