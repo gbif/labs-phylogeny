@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "antd": "^4.9.1",
     "@ant-design/icons": "^4.1.0",
+    "antd": "^4.9.1",
     "async": "^2.6.2",
     "axios": "^0.18.0",
     "biojs-io-newick": "^1.5.0",
@@ -31,6 +31,7 @@
     "react-split": "^2.0.4",
     "react-split-pane": "^0.1.87",
     "styled-components": "^4.2.0",
+    "use-draggable-scroll": "^0.1.0",
     "validator": "^10.11.0"
   },
   "scripts": {

@@ -72,10 +72,20 @@ export const StyledTree = styled.div`
     display: inline-block;
     background: white;
     cursor: pointer;
+    z-index: 10;
+  }
+
+  .gb-tree-color-click-area {
+    width: 10px;
+    height: 10px;
+    display: block;
+    left: -5px;
+    top: -5px;
+    position: relative;
+    /* background: tomato; */
   }
 
   .gb-tree-leaf-color {
-    z-index: 200;
     margin-right: -4px;
     background: white;
   }
@@ -95,18 +105,26 @@ export const StyledTree = styled.div`
     .gb-tree-node-name {
       color: #333;
     }
-    /* :hover + ol .gb-tree-content-node { // :hover,  */
-    :hover + ol .gb-tree-leaf { // :hover, 
-      background: #2a4858!important;
-      color: white;
-      .gb-tree-node-name {
-        color: white;
-      }
-    }
   }
+
+  .gb-tree-color:hover + ol .gb-tree-leaf, .gb-tree-color:hover + .gb-tree-leaf {
+    background: #cad2d3!important;
+    color: white;
+    /* .gb-tree-node-name {
+      color: white;
+    } */
+  }
+
+  /* .gb-tree-color:hover + ol {
+    color: pink;
+    /* span, div {
+      background: currentColor;
+    } */
+  } */
 
   .gb-tree-hover-title:hover {
     box-shadow: 0 0 2px 2px #0089ffab;
+    z-index: 1000;
   }
 
   /* .gb-tree-node:hover > .gb-tree-hover-title[title]:before {

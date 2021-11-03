@@ -34,8 +34,10 @@ import SplitPane from "react-split-pane"; // https://github.com/tomkp/react-spli
 import _ from "lodash";
 import './explore.css';
 
-//let catCol = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928', '#000080', ];
-let catCol = ['#FF6633', '#FF33FF', '#FFFF99', '#00B3E6',
+// let catCol = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928', '#000080', ];
+let catCol = ['#FAB3A9','#7FB285','#463239','#ED6B86','#B5F8FE',
+  '#FBD87F','#FCE4D8','#6D597A','#B56576','#E56B6F',
+  '#FFE66D', '#FF6633', '#FF33FF', '#FFFF99', '#00B3E6',
   '#E6B333', '#3366E6', '#FFB399', '#999966', '#99FF99', '#B34D4D',
   '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
   '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
@@ -45,6 +47,17 @@ let catCol = ['#FF6633', '#FF33FF', '#FFFF99', '#00B3E6',
   '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
   '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
   '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
+catCol.reverse();
+// let catCol = ['#FF6633', '#FF33FF', '#FFFF99', '#00B3E6',
+//   '#E6B333', '#3366E6', '#FFB399', '#999966', '#99FF99', '#B34D4D',
+//   '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
+//   '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
+//   '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
+//   '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
+//   '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
+//   '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
+//   '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
+//   '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
 
 let colorPool = catCol;
 
@@ -167,7 +180,6 @@ function buildTree(nameMap, node, parentKey, index, nodeIdMap) {
       branch_length: node.branch_length,
       name: node.name,
       nodeIndex: nodeIndex,
-      leafIndex: leafIndex,
       other: {
         originalNodeName: node.name,
         branch_length: node.branch_length,
@@ -178,6 +190,7 @@ function buildTree(nameMap, node, parentKey, index, nodeIdMap) {
     nodeIdMap[n.key] = n;
     if (node.name) n.taxonKey = nameMap[node.name].match.usageKey;
     if (children.length === 0) {
+      n.leafIndex = leafIndex;
       leafIndex++;
       node2LeafTaxonKeys[n.key] = n.taxonKey ? [n.taxonKey] : [];
       n.firstLeaf = n.title;

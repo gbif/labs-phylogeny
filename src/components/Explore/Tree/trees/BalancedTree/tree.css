@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  position: relative;
 }
 
 .tree-controls {
@@ -13,4 +14,17 @@
 .tree-tree {
   padding: 24px 0;
   flex: 1 1 auto;
+}
+
+.gb-snack-bar {
+  position: absolute;
+  background: #333;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 2000;
+  margin-bottom: 24px;
 }

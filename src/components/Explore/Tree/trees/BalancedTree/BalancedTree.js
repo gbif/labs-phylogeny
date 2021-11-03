@@ -3,6 +3,7 @@ import { StyledTree } from './styles2';
 import acacia from './simple2.json';
 import './tree.css';
 import { Radio, AutoComplete } from 'antd';
+import useDraggableScroll from 'use-draggable-scroll';
 const Option = AutoComplete.Option;
 
 const defaultFontSize = 12;
@@ -10,10 +11,8 @@ const defaultMultiplier = 1000;
 const visibleNamesThreshold = 10;
 
 // Generic hook for detecting scroll:
-const useScrollAware = () => {
+const useScrollAware = (ref) => {
   const [scrollTop, setScrollTop] = useState(0);
-  const ref = useRef();
-
   let throttleTimeout = null;
   const onScroll = (e) => {
     if (throttleTimeout === null) {
@@ -34,7 +33,7 @@ const useScrollAware = () => {
     return () => scrollContainer.removeEventListener("scroll", onScroll);
   }, []);
 
-  return [scrollTop, ref];
+  return [scrollTop];
 };
 
 
@@ -88,24 +87,56 @@ function getVisibleNodes(node, scrollTop, elementHeight, hasVisibleParent) {
   return visibleNode;
 }
 
-function SampleTree({ highlighted, highlightedLeaf, onToggle, hasVisibleParent, node, parentPosition = 0, first = true, scrollTop, multiplier, root, last, elementHeight = 20, ...props }) {
+const Tree = React.memo((props) => {
+  return <SampleTree {...props} />
+});
+
+function SampleTree({ onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, onToggle, hasVisibleParent, node, parentPosition = 0, first = true, scrollTop, multiplier, root, last, elementHeight = 20, ...props }) {
   if (!node) return null;
   if (!node.size) return null;
   const isHighlighted = highlighted[node.key];
-  const isHighlightedLeaf = highlightedLeaf === node.leafIndex;
+  const isHighlightedLeaf = typeof highlightedLeaf !== 'undefined' && highlightedLeaf === node.leafIndex;
   // console.log(highlightedLeaf);
   const visibleNames = elementHeight >= visibleNamesThreshold;
   node.children = node.children || [];
   const childrenLength = node.children.length;
   const depth = node.branch_length * multiplier || 0;
+  const nodeTitle = childrenLength === 0 ? node.title : `${node.firstLeaf} - ${node.lastLeaf}`
+  // const titleProp = !visibleNames ? { gbtitle: nodeTitle } : {};
+  if (node.leafIndex === 0) {
+    console.log('redrawn');
+  }
+  const treeProps = {
+    onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, onToggle, elementHeight, multiplier
+  };
 
   if (node.size * elementHeight < 10 && childrenLength > 0) {
     const totalDepth = node.childrenLength * multiplier;
-    return <li style={{ height: node.size * elementHeight, paddingLeft: depth }}
+    return <li 
+      style={{ 
+        height: node.size * elementHeight, 
+        paddingLeft: depth,
+        background: !visibleNames && isHighlighted ? isHighlighted.color + 'cc' : null
+      }}
       className="gb-tree-node">
       <span className="gb-tree-pipe" style={{ width: depth }}></span>
+      <span onClick={e => onToggle({ selected: node.key })}
+        className={`gb-tree-hover-title gb-tree-color ${childrenLength === 0 ? 'gb-tree-leaf-color' : ''}`}
+        style={{
+          backgroundColor: isHighlighted ? isHighlighted.color : null,
+          boxShadow: isHighlightedLeaf ? '0 0 0 2px #ff6868' : null
+        }}
+        onMouseEnter={e => onNodeEnter({e, title: nodeTitle })}
+        onMouseLeave={e => onNodeLeave({e, title: nodeTitle })}
+        // gbtitle={nodeTitle}
+        id={`${childrenLength === 0 ? `gb-tree-node-${node.leafIndex}` : null}`}
+      >
+        {!visibleNames && <span className="gb-tree-color-click-area"></span>}
+      </span>
       <div className="gb-tree-content-node" >
-        {node.name && <span className="gb-tree-hover-title" gbtitle={childrenLength === 0 && elementHeight < visibleNamesThreshold ? node.name : null}>
+        {node.name && <span 
+          className="gb-tree-hover-title" 
+          >
         </span>}
       </div>
       <div className="gb-tree-subtree-placeholder" style={{ width: totalDepth }}></div>
@@ -117,14 +148,9 @@ function SampleTree({ highlighted, highlightedLeaf, onToggle, hasVisibleParent, 
       height: node.size * elementHeight,
       paddingLeft: depth,
       borderRight: visibleNames && isHighlighted ? `8px solid ${isHighlighted.color}` : null,
-      background: !visibleNames && isHighlighted ? isHighlighted.color : null
+      background: !visibleNames && isHighlighted ? isHighlighted.color + 'cc' : null
     }}
     className={`gb-tree-node ${isHighlighted ? 'gb-tree-highlighted' : ''}`}
-    onClick={e => {
-      onToggle({ selected: node.key });
-      e.stopPropagation();
-      return false;
-    }}
   >
     <span className="gb-tree-pipe" style={{ width: depth }}></span>
     <span onClick={e => onToggle({ selected: node.key })}
@@ -133,26 +159,25 @@ function SampleTree({ highlighted, highlightedLeaf, onToggle, hasVisibleParent, 
         backgroundColor: isHighlighted ? isHighlighted.color : null,
         boxShadow: isHighlightedLeaf ? '0 0 0 2px #ff6868' : null
       }}
-      gbtitle={childrenLength === 0 && elementHeight < visibleNamesThreshold ? node.title : `${node.firstLeaf} - ${node.lastLeaf}`}
+      onMouseEnter={e => onNodeEnter({e, title: nodeTitle })}
+      onMouseLeave={e => onNodeLeave({e, title: nodeTitle })}
+      // {...titleProp}
       id={`${childrenLength === 0 ? `gb-tree-node-${node.leafIndex}` : null}`}
-    ></span>
-    {visibleNames && <div className={`gb-tree-content-node ${childrenLength === 0 ? 'gb-tree-leaf' : 'gb-tree-branch'}`} 
-                          onClick={e => onToggle({ selected: node.key })}
-                          style={{boxShadow: isHighlightedLeaf ? '0 0 0 2px #ff6868' : null}}
-                          >
-      {/* {childrenLength === 0 && <>
-        <span>{node.name}</span>
-      </>} */}
+    >
+      {!visibleNames && <span className="gb-tree-color-click-area"></span>}
+    </span>
+    {visibleNames && childrenLength === 0 && <div className={`gb-tree-content-node ${childrenLength === 0 ? 'gb-tree-leaf' : 'gb-tree-branch'}`}
+      onClick={e => onToggle({ selected: node.key })}
+      style={{ boxShadow: isHighlightedLeaf ? '0 0 0 2px #ff6868' : null }}
+    >
       {node.name && childrenLength === 0 && <span>
         <span>
           <span className="gb-tree-node-name" dangerouslySetInnerHTML={{ __html: node.title }}></span>
         </span>
-        {/* {elementHeight < visibleNamesThreshold && <span className="gb-tree-color" style={{backgroundColor: isHighlighted ? isHighlighted.color : null}}></span>} */}
       </span>}
-      {/* {childrenLength > 0 && <div className="gb-tree-color" style={{backgroundColor: isHighlighted ? isHighlighted.color : null}} onClick={e => onToggle({selected: node.key})}></div>} */}
     </div>}
     {childrenLength > 0 && <ol className="gb-tree-list" style={{ color: isHighlighted ? isHighlighted.color : null }}>
-      {node.children.map((x, i) => <SampleTree highlightedLeaf={highlightedLeaf} highlighted={highlighted} onToggle={onToggle} parentPosition={node.position} key={x.nodeIndex} node={x} multiplier={multiplier} first={i === 0} last={childrenLength - 1 === i} elementHeight={elementHeight} />)}
+      {node.children.map((x, i) => <SampleTree {...treeProps} parentPosition={node.position} key={x.nodeIndex} node={x} first={i === 0} last={childrenLength - 1 === i} />)}
     </ol>}
   </li>
 }
@@ -165,7 +190,8 @@ export function BalancedTree({
   nodeIdMap,
   ...props
 }) {
-  const [scrollTop, ref] = useScrollAware();
+  const ref = useRef(null);
+  const [scrollTop] = useScrollAware(ref);
   const [multiplier, setMultiplier] = useState(defaultMultiplier);
   const [fontSize, setFontSize] = useState(defaultFontSize);
   const [q, setQ] = useState('');
@@ -174,6 +200,8 @@ export function BalancedTree({
   const [leafSuggestions, setLeafSuggestions] = useState([]);
   const [visibleNode, setVisibleNodes] = useState({});
   const [tree, setTree] = useState();
+  const [hoveredNode, setHoveredNode] = useState();
+  const { onMouseDown } = useDraggableScroll(ref);
 
   useEffect(() => {
     // const contentHeight = Math.floor(fontSize * 1.15 + 2 + fontSize * 2 * 0.25);
@@ -209,11 +237,16 @@ export function BalancedTree({
     setTree(t);
   }, [treeData]);
 
-  const scrollToItem = useCallback(({ leafIndex = 0}) => {
+  const onNodeEnter = useCallback(({title}) => {
+    setHoveredNode(title);
+  }, []);
+
+  const onNodeLeave = useCallback(({title}) => {
+    setHoveredNode();
+  }, []);
+
+  const scrollToItem = useCallback(({ leafIndex = 0 }) => {
     let attempts = 0;
-    console.log(leafIndex);
-    console.log(elementHeight);
-    console.log(elementHeight * leafIndex);
     ref.current.scrollTo({ top: elementHeight * leafIndex - 300, behavior: 'smooth' });
     const scrollToElementInterval = setInterval(e => {
       let el = document.getElementById(`gb-tree-node-${leafIndex}`);
@@ -231,6 +264,10 @@ export function BalancedTree({
       }
     }, 100);
   }, [elementHeight]);
+
+  const treeProps = {
+    onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, onToggle, elementHeight, multiplier
+  };
 
   return <div className="treeArea" style={{ display: 'flex', flexDirection: 'column' }}>
     <div className="tree-controls">
@@ -250,7 +287,7 @@ export function BalancedTree({
           const selectedLeafIndex = selectedNode.leafIndex;
           console.log(selectedLeafIndex);
           setHighlightedLeaf(selectedLeafIndex);
-          scrollToItem({leafIndex: selectedLeafIndex});
+          scrollToItem({ leafIndex: selectedLeafIndex });
           setQ('');
         }}
         placeholder="Search tree"
@@ -259,6 +296,9 @@ export function BalancedTree({
         {leafSuggestions.filter(i => i.label.indexOf(q.toLowerCase()) > -1).map(o => <Option key={o.key} value={o.key} label={o.label}><span dangerouslySetInnerHTML={{ __html: o.label }}></span> </Option>)}
       </AutoComplete>
     </div>
+    {hoveredNode && <div className="gb-snack-bar">
+      {hoveredNode}
+    </div>}
     <div className="tree-controls">
       <Radio.Group value={fontSize} onChange={e => setFontSize(e.target.value)}>
         <Radio.Button value="3">XS</Radio.Button>
@@ -269,33 +309,10 @@ export function BalancedTree({
       <label style={{ marginLeft: 12 }}>Horizontal scale
         <input style={{ marginLeft: 12 }} type="range" min={1} max={10000} value={multiplier} onChange={e => setMultiplier(e.target.value)} />
       </label>
-      scrolltop: {scrollTop} - eh: {elementHeight}
-
-      {/* <button onClick={e => {
-        const leafIndex = 336;
-        let attempts = 0;
-        ref.current.scrollTo({ top: elementHeight * leafIndex, behavior: 'smooth' });
-        const scrollToElementInterval = setInterval(e => {
-          let el = document.getElementById(`gb-tree-node-${leafIndex}`);
-          console.log('triggered');
-          console.log(el);
-          attempts++;
-          if (el) {
-            setTimeout(e => el.scrollIntoView({
-              inline: 'center',
-              behavior: 'smooth',
-              block: 'center'
-            }), 100);
-            clearInterval(scrollToElementInterval);
-          }
-          if (attempts > 100) {
-            clearInterval(scrollToElementInterval);
-          }
-        }, 50);
-      }}>380</button> */}
     </div>
     <StyledTree
       ref={ref}
+      onMouseDown={onMouseDown}
       className="tree-tree"
       {...props}>
       {tree && <ol className="gb-tree-list"
@@ -306,7 +323,7 @@ export function BalancedTree({
           height: tree.size * elementHeight,
           width: 2000
         }}>
-        <SampleTree highlightedLeaf={highlightedLeaf} highlighted={highlighted} onToggle={onToggle} scrollTop={scrollTop} node={visibleNode} root={true} multiplier={multiplier} elementHeight={elementHeight} />
+        <Tree {...treeProps} scrollTop={scrollTop} node={visibleNode} root={true} />
       </ol>}
     </StyledTree>
   </div>
