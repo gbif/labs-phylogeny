@@ -10,12 +10,12 @@ export const StyledTree = styled.div`
     position: relative;
     line-height: 1.15;
     /* padding-left: .2vw; */
-    padding-left: .5em;
+    padding-left: .25em;
 
     // [connector] parent-to-children
     &::before {
       /* width: .2vw; */
-      width: .5em;
+      width: .25em;
       content: '';
       position: absolute;
       left: 0;
