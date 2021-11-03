@@ -35,8 +35,8 @@ import _ from "lodash";
 import './explore.css';
 
 // let catCol = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928', '#000080', ];
-let catCol = ['#FAB3A9','#7FB285','#463239','#ED6B86','#B5F8FE',
-  '#FBD87F','#FCE4D8','#6D597A','#B56576','#E56B6F',
+let catCol = ['#FAB3A9', '#7FB285', '#463239', '#ED6B86', '#B5F8FE',
+  '#FBD87F', '#FCE4D8', '#6D597A', '#B56576', '#E56B6F',
   '#FFE66D', '#FF6633', '#FF33FF', '#FFFF99', '#00B3E6',
   '#E6B333', '#3366E6', '#FFB399', '#999966', '#99FF99', '#B34D4D',
   '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
@@ -62,8 +62,10 @@ catCol.reverse();
 let colorPool = catCol;
 
 function getColor() {
-  if (colorPool.length === 0) return;
-  let c = colorPool.pop();
+  const optionsLeft = colorPool.length;
+  if (optionsLeft === 0) return '#FAB3A9';
+  const randomIndex = Math.floor(Math.random() * optionsLeft);
+  const c = colorPool.splice(randomIndex, 1)[0];
   return c;
 }
 
@@ -93,7 +95,7 @@ class Explore extends React.Component {
     // Create a decorated tree with extra properties that are useful when visualizing
     const nameMap = _.keyBy(this.props.matchedNames, "name");
     let nodeIdMap = {};
-    let {tree, node2LeafTaxonKeys} = buildTree(nameMap, this.props.rawTree, 0, 0, nodeIdMap);
+    let { tree, node2LeafTaxonKeys } = buildTree(nameMap, this.props.rawTree, 0, 0, nodeIdMap);
     return {
       tree,
       nameMap,
@@ -120,7 +122,7 @@ class Explore extends React.Component {
           ...this.state.selected, [node.key]: {
             color: getColor(),
             taxonKeys: this.state.node2LeafTaxonKeys[node.key],
-            visibleTaxonKeys: this.state.node2LeafTaxonKeys[node.key].slice(0,200),
+            visibleTaxonKeys: this.state.node2LeafTaxonKeys[node.key].slice(0, 200),
             layerName: node.key
           }
         }
