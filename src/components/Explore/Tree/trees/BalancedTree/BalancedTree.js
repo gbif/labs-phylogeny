@@ -96,16 +96,12 @@ function SampleTree({ onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, on
   if (!node.size) return null;
   const isHighlighted = highlighted[node.key];
   const isHighlightedLeaf = typeof highlightedLeaf !== 'undefined' && highlightedLeaf === node.leafIndex;
-  // console.log(highlightedLeaf);
   const visibleNames = elementHeight >= visibleNamesThreshold;
   node.children = node.children || [];
   const childrenLength = node.children.length;
   const depth = node.branch_length * multiplier || 0;
   const nodeTitle = childrenLength === 0 ? node.title : `${node.firstLeaf} - ${node.lastLeaf}`
   // const titleProp = !visibleNames ? { gbtitle: nodeTitle } : {};
-  if (node.leafIndex === 0) {
-    console.log('redrawn');
-  }
   const treeProps = {
     onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, onToggle, elementHeight, multiplier
   };
@@ -265,6 +261,10 @@ export function BalancedTree({
     }, 100);
   }, [elementHeight]);
 
+  const containerWidth = (visibleNode.childrenLength * multiplier + 300) || 1000;
+  const minMultiplier = (50/visibleNode.childrenLength) || 1;
+  const maxMultiplier = (3000/visibleNode.childrenLength) || 10000;
+
   const treeProps = {
     onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, onToggle, elementHeight, multiplier
   };
@@ -307,7 +307,7 @@ export function BalancedTree({
         <Radio.Button value="15">L</Radio.Button>
       </Radio.Group>
       <label style={{ marginLeft: 12 }}>Horizontal scale
-        <input style={{ marginLeft: 12 }} type="range" min={1} max={10000} value={multiplier} onChange={e => setMultiplier(e.target.value)} />
+        <input style={{ marginLeft: 12 }} type="range" min={minMultiplier} max={maxMultiplier} value={multiplier} onChange={e => setMultiplier(e.target.value)} />
       </label>
     </div>
     <StyledTree
@@ -321,7 +321,7 @@ export function BalancedTree({
           willChange: "transform",
           position: "relative",
           height: tree.size * elementHeight,
-          width: 2000
+          width: containerWidth
         }}>
         <Tree {...treeProps} scrollTop={scrollTop} node={visibleNode} root={true} />
       </ol>}

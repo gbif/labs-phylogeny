@@ -7,19 +7,20 @@ export const StyledTree = styled.div`
     list-style: none;
     margin: 0;
     padding: 0;
-    
-    padding-left: .2vw;
     position: relative;
     line-height: 1.15;
+    /* padding-left: .2vw; */
+    padding-left: .5em;
 
     // [connector] parent-to-children
     &::before {
+      /* width: .2vw; */
+      width: .5em;
       content: '';
       position: absolute;
       left: 0;
       top: 50%;
       border-top: 1px solid #333; // perhaps dotted as this isn't a branch length // remove color to use current
-      width: .2vw;
     }
   }
 

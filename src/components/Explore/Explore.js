@@ -195,11 +195,14 @@ function buildTree(nameMap, node, parentKey, index, nodeIdMap) {
       node2LeafTaxonKeys[n.key] = n.taxonKey ? [n.taxonKey] : [];
       n.firstLeaf = n.title;
       n.lastLeaf = n.title;
+      n.childrenLength = 0;
     }
     if (node.children) {
       n.children = node.children.map((child, i) => {
         return recursive(nameMap, child, n.key, i, nodeIdMap);
       });
+      const childrenLength = n.children.reduce((maxLength, a) => Math.max(maxLength, a.childrenLength + a.branch_length), 0);
+      n.childrenLength = childrenLength;
       const childTaxa = _.union(...(n.children.map(x => node2LeafTaxonKeys[x.key])));
       const firstLeaf = n.children[0].firstLeaf;
       const lastLeaf = n.children[n.children.length - 1].lastLeaf;
@@ -211,5 +214,6 @@ function buildTree(nameMap, node, parentKey, index, nodeIdMap) {
   }
 
   let tree = recursive(nameMap, node, parentKey, index, nodeIdMap);
+  console.log(tree.childrenLength);
   return { tree, node2LeafTaxonKeys };
 }

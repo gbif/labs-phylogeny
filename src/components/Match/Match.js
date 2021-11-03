@@ -7,7 +7,7 @@ import withContext from "../withContext"
 import _ from "lodash"
 // import qs from 'qs';
 
-const NAME_LIST_LIMIT = 4000;
+const NAME_LIST_LIMIT = 20000;
 
 class Match extends React.Component {
   render() {

@@ -11,19 +11,35 @@ class ContextProvider extends React.Component {
       matchedNames: this.getJSONFromStorage('matchedNames'),
       setNewick: (newick) => {
         this.setState({ newick });
-        localStorage.setItem('newick', newick);
+        try {
+          localStorage.setItem('newick', newick);
+        } catch(e) {
+          //ignore errors
+        }
       },
       setRawTree: (rawTree) => {
         this.setState({ rawTree });
-        localStorage.setItem('rawTree', JSON.stringify(rawTree));
+        try {
+          localStorage.setItem('rawTree', JSON.stringify(rawTree));
+        } catch(e) {
+          //ignore errors
+        }
       },
       setNames: (names) => {
         this.setState({ names });
-        localStorage.setItem('names', JSON.stringify(names));
+        try {
+          localStorage.setItem('names', JSON.stringify(names));
+        } catch(e) {
+          //ignore errors
+        }
       },
       setMatchedNames: (matchedNames) => {
         this.setState({ matchedNames });
-        localStorage.setItem('matchedNames', JSON.stringify(matchedNames));
+        try {
+          localStorage.setItem('matchedNames', JSON.stringify(matchedNames));
+        } catch(e) {
+          //ignore errors
+        }
       }
     };
   }
