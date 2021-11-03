@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { StyledTree } from './styles2';
 import acacia from './simple2.json';
 import './tree.css';
-import { Radio } from 'antd';
+import { Radio, AutoComplete } from 'antd';
+const Option = AutoComplete.Option;
 
 const defaultFontSize = 12;
 const defaultMultiplier = 1000;
@@ -87,10 +88,12 @@ function getVisibleNodes(node, scrollTop, elementHeight, hasVisibleParent) {
   return visibleNode;
 }
 
-function SampleTree({ highlighted, onToggle, hasVisibleParent, node, parentPosition = 0, first = true, scrollTop, multiplier, root, last, elementHeight = 20, ...props }) {
+function SampleTree({ highlighted, highlightedLeaf, onToggle, hasVisibleParent, node, parentPosition = 0, first = true, scrollTop, multiplier, root, last, elementHeight = 20, ...props }) {
   if (!node) return null;
   if (!node.size) return null;
   const isHighlighted = highlighted[node.key];
+  const isHighlightedLeaf = highlightedLeaf === node.leafIndex;
+  // console.log(highlightedLeaf);
   const visibleNames = elementHeight >= visibleNamesThreshold;
   node.children = node.children || [];
   const childrenLength = node.children.length;
@@ -110,9 +113,9 @@ function SampleTree({ highlighted, onToggle, hasVisibleParent, node, parentPosit
   }
 
   return <li
-    style={{ 
-      height: node.size * elementHeight, 
-      paddingLeft: depth, 
+    style={{
+      height: node.size * elementHeight,
+      paddingLeft: depth,
       borderRight: visibleNames && isHighlighted ? `8px solid ${isHighlighted.color}` : null,
       background: !visibleNames && isHighlighted ? isHighlighted.color : null
     }}
@@ -126,11 +129,17 @@ function SampleTree({ highlighted, onToggle, hasVisibleParent, node, parentPosit
     <span className="gb-tree-pipe" style={{ width: depth }}></span>
     <span onClick={e => onToggle({ selected: node.key })}
       className={`gb-tree-hover-title gb-tree-color ${childrenLength === 0 ? 'gb-tree-leaf-color' : ''}`}
-      style={{ backgroundColor: isHighlighted ? isHighlighted.color : null }}
+      style={{
+        backgroundColor: isHighlighted ? isHighlighted.color : null,
+        boxShadow: isHighlightedLeaf ? '0 0 0 2px #ff6868' : null
+      }}
       gbtitle={childrenLength === 0 && elementHeight < visibleNamesThreshold ? node.title : `${node.firstLeaf} - ${node.lastLeaf}`}
       id={`${childrenLength === 0 ? `gb-tree-node-${node.leafIndex}` : null}`}
     ></span>
-    {visibleNames && <div className={`gb-tree-content-node ${childrenLength === 0 ? 'gb-tree-leaf' : 'gb-tree-branch'}`} onClick={e => onToggle({ selected: node.key })}>
+    {visibleNames && <div className={`gb-tree-content-node ${childrenLength === 0 ? 'gb-tree-leaf' : 'gb-tree-branch'}`} 
+                          onClick={e => onToggle({ selected: node.key })}
+                          style={{boxShadow: isHighlightedLeaf ? '0 0 0 2px #ff6868' : null}}
+                          >
       {/* {childrenLength === 0 && <>
         <span>{node.name}</span>
       </>} */}
@@ -143,7 +152,7 @@ function SampleTree({ highlighted, onToggle, hasVisibleParent, node, parentPosit
       {/* {childrenLength > 0 && <div className="gb-tree-color" style={{backgroundColor: isHighlighted ? isHighlighted.color : null}} onClick={e => onToggle({selected: node.key})}></div>} */}
     </div>}
     {childrenLength > 0 && <ol className="gb-tree-list" style={{ color: isHighlighted ? isHighlighted.color : null }}>
-      {node.children.map((x, i) => <SampleTree highlighted={highlighted} onToggle={onToggle} parentPosition={node.position} key={x.nodeIndex} node={x} multiplier={multiplier} first={i === 0} last={childrenLength - 1 === i} elementHeight={elementHeight} />)}
+      {node.children.map((x, i) => <SampleTree highlightedLeaf={highlightedLeaf} highlighted={highlighted} onToggle={onToggle} parentPosition={node.position} key={x.nodeIndex} node={x} multiplier={multiplier} first={i === 0} last={childrenLength - 1 === i} elementHeight={elementHeight} />)}
     </ol>}
   </li>
 }
@@ -153,12 +162,16 @@ export function BalancedTree({
   onToggle,
   highlighted,
   tree: treeData = acacia,
+  nodeIdMap,
   ...props
 }) {
   const [scrollTop, ref] = useScrollAware();
   const [multiplier, setMultiplier] = useState(defaultMultiplier);
   const [fontSize, setFontSize] = useState(defaultFontSize);
+  const [q, setQ] = useState('');
+  const [highlightedLeaf, setHighlightedLeaf] = useState();
   const [elementHeight, setElementHeight] = useState(28);
+  const [leafSuggestions, setLeafSuggestions] = useState([]);
   const [visibleNode, setVisibleNodes] = useState({});
   const [tree, setTree] = useState();
 
@@ -183,6 +196,11 @@ export function BalancedTree({
     setVisibleNodes(node);
   }, [scrollTop, elementHeight, tree]);
 
+  useEffect(() => {
+    const suggestions = Object.keys(nodeIdMap).filter(key => nodeIdMap[key].title && nodeIdMap[key].leafIndex).map(key => ({ key, label: nodeIdMap[key].title.toLowerCase() }));
+    setLeafSuggestions(suggestions);
+  }, [treeData]);
+
   // on mount
   useEffect(() => {
     if (!treeData) return;
@@ -191,7 +209,56 @@ export function BalancedTree({
     setTree(t);
   }, [treeData]);
 
+  const scrollToItem = useCallback(({ leafIndex = 0}) => {
+    let attempts = 0;
+    console.log(leafIndex);
+    console.log(elementHeight);
+    console.log(elementHeight * leafIndex);
+    ref.current.scrollTo({ top: elementHeight * leafIndex - 300, behavior: 'smooth' });
+    const scrollToElementInterval = setInterval(e => {
+      let el = document.getElementById(`gb-tree-node-${leafIndex}`);
+      attempts++;
+      if (el) {
+        setTimeout(e => el.scrollIntoView({
+          inline: 'center',
+          behavior: 'smooth',
+          block: 'center'
+        }), 100);
+        clearInterval(scrollToElementInterval);
+      }
+      if (attempts > 50) {
+        clearInterval(scrollToElementInterval);
+      }
+    }, 100);
+  }, [elementHeight]);
+
   return <div className="treeArea" style={{ display: 'flex', flexDirection: 'column' }}>
+    <div className="tree-controls">
+      <AutoComplete
+        style={{ width: 400 }}
+        value={q}
+        onChange={q => {
+          if (!q) {
+            setQ('');
+            setHighlightedLeaf();
+          } else {
+            setQ(q);
+          }
+        }}
+        onSelect={leafIndex => {
+          const selectedNode = nodeIdMap[leafIndex];
+          const selectedLeafIndex = selectedNode.leafIndex;
+          console.log(selectedLeafIndex);
+          setHighlightedLeaf(selectedLeafIndex);
+          scrollToItem({leafIndex: selectedLeafIndex});
+          setQ('');
+        }}
+        placeholder="Search tree"
+        allowClear
+      >
+        {leafSuggestions.filter(i => i.label.indexOf(q.toLowerCase()) > -1).map(o => <Option key={o.key} value={o.key} label={o.label}><span dangerouslySetInnerHTML={{ __html: o.label }}></span> </Option>)}
+      </AutoComplete>
+    </div>
     <div className="tree-controls">
       <Radio.Group value={fontSize} onChange={e => setFontSize(e.target.value)}>
         <Radio.Button value="3">XS</Radio.Button>
@@ -199,9 +266,10 @@ export function BalancedTree({
         <Radio.Button value="12">M</Radio.Button>
         <Radio.Button value="15">L</Radio.Button>
       </Radio.Group>
-      <label style={{marginLeft: 12}}>Branch length
-        <input style={{marginLeft: 12}} type="range" min={1} max={10000} value={multiplier} onChange={e => setMultiplier(e.target.value)} />
+      <label style={{ marginLeft: 12 }}>Horizontal scale
+        <input style={{ marginLeft: 12 }} type="range" min={1} max={10000} value={multiplier} onChange={e => setMultiplier(e.target.value)} />
       </label>
+      scrolltop: {scrollTop} - eh: {elementHeight}
 
       {/* <button onClick={e => {
         const leafIndex = 336;
@@ -238,7 +306,7 @@ export function BalancedTree({
           height: tree.size * elementHeight,
           width: 2000
         }}>
-        <SampleTree highlighted={highlighted} onToggle={onToggle} scrollTop={scrollTop} node={visibleNode} root={true} multiplier={multiplier} elementHeight={elementHeight} />
+        <SampleTree highlightedLeaf={highlightedLeaf} highlighted={highlighted} onToggle={onToggle} scrollTop={scrollTop} node={visibleNode} root={true} multiplier={multiplier} elementHeight={elementHeight} />
       </ol>}
     </StyledTree>
   </div>
