@@ -92,8 +92,6 @@ class Map extends Component {
     selected = selected || {};
     let list = this.getLayersAsArray(selected);
     let addLayer = this.addLayer;
-    // ['#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5','#d9d9d9','#bc80bd']
-    // let catCol = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a'];
     list.filter(x => x.taxonKeys && x.taxonKeys.length > 0).forEach(x => {
       addLayer(x)
     });
@@ -102,8 +100,6 @@ class Map extends Component {
   addLayer = (layer) => {
     const query = layer.visibleTaxonKeys.reduce((str, key) => str += `&taxonKey=${key}`, '');
     var tileString = "https://api.gbif.org/v2/map/occurrence/adhoc/{z}/{x}/{y}.mvt?style=scaled.circles&mode=GEO_CENTROID&occurrenceStatus=present&srs=EPSG%3A3857&squareSize=512" + query;
-    // var tileString = "https://api.gbif.org/v2/map/occurrence/density/{z}/{x}/{y}.mvt?srs=EPSG:3857" + query;
-    // var tileString = "https://api.gbif.org/v2/map/occurrence/density/{z}/{x}/{y}.mvt?srs=EPSG:3857&bin=hex&hexPerTile=50&taxonKey=2435098";
     this.map.addLayer(
       {
         id: "occurrences_" + layer.layerName,
