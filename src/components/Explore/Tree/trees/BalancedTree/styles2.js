@@ -155,7 +155,7 @@ export const StyledTree = styled.div`
   }
 
   .gb-tree-subtree-placeholder {
-    border-top: 2px solid;
+    border-top: 2px solid #333; //remove color to use current
   }
 
   .gb-tree-highlighted {

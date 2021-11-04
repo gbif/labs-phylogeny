@@ -91,7 +91,7 @@ const Tree = React.memo((props) => {
   return <SampleTree {...props} />
 });
 
-function SampleTree({ onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, onToggle, hasVisibleParent, node, parentPosition = 0, first = true, scrollTop, multiplier, root, last, elementHeight = 20, ...props }) {
+function SampleTree({ onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, onToggle, hasVisibleParent, node, parentPosition = 0, first = true, scrollTop, multiplier, elementHeight = 20, ...props }) {
   if (!node) return null;
   if (!node.size) return null;
   const isHighlighted = highlighted[node.key];
@@ -173,7 +173,7 @@ function SampleTree({ onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, on
       </span>}
     </div>}
     {childrenLength > 0 && <ol className="gb-tree-list" style={{ color: isHighlighted ? isHighlighted.color : null }}>
-      {node.children.map((x, i) => <SampleTree {...treeProps} parentPosition={node.position} key={x.nodeIndex} node={x} first={i === 0} last={childrenLength - 1 === i} />)}
+      {node.children.map((x, i) => <SampleTree {...treeProps} parentPosition={node.position} key={x.nodeIndex} node={x} first={i === 0} />)}
     </ol>}
   </li>
 }
@@ -261,9 +261,9 @@ export function BalancedTree({
     }, 100);
   }, [elementHeight]);
 
-  const containerWidth = (visibleNode.childrenLength * multiplier + 300) || 1000;
-  const minMultiplier = (50/visibleNode.childrenLength) || 1;
-  const maxMultiplier = (3000/visibleNode.childrenLength) || 10000;
+  const containerWidth = (treeData.childrenLength * multiplier * 1.8 + 400) || 1000; // add some extra (* n + m) due to branch node size and labels
+  const minMultiplier = (50/treeData.childrenLength) || 1;
+  const maxMultiplier = (3000/treeData.childrenLength) || 10000;
 
   const treeProps = {
     onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, onToggle, elementHeight, multiplier
@@ -296,8 +296,7 @@ export function BalancedTree({
         {leafSuggestions.filter(i => i.label.indexOf(q.toLowerCase()) > -1).map(o => <Option key={o.key} value={o.key} label={o.label}><span dangerouslySetInnerHTML={{ __html: o.label }}></span> </Option>)}
       </AutoComplete>
     </div>
-    {hoveredNode && <div className="gb-snack-bar">
-      {hoveredNode}
+    {hoveredNode && <div className="gb-snack-bar" dangerouslySetInnerHTML={{__html: hoveredNode}}>
     </div>}
     <div className="tree-controls">
       <Radio.Group value={fontSize} onChange={e => setFontSize(e.target.value)}>
@@ -323,7 +322,7 @@ export function BalancedTree({
           height: tree.size * elementHeight,
           width: containerWidth
         }}>
-        <Tree {...treeProps} scrollTop={scrollTop} node={visibleNode} root={true} />
+        <Tree {...treeProps} scrollTop={scrollTop} node={visibleNode} />
       </ol>}
     </StyledTree>
   </div>

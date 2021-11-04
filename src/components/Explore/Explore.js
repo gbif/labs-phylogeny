@@ -29,13 +29,14 @@ import React from "react";
 import { withRouter } from "react-router-dom";
 import PhylogenyTree from "./Tree";
 import Map from './Map';
+import { notification } from 'antd';
+
 import withContext from "../withContext";
 import SplitPane from "react-split-pane"; // https://github.com/tomkp/react-split-pane
 import _ from "lodash";
 import './explore.css';
 
-// let catCol = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928', '#000080', ];
-let catCol = ['#FAB3A9', '#7FB285', '#463239', '#ED6B86', '#B5F8FE',
+let colorPool = ['#FAB3A9', '#7FB285', '#463239', '#ED6B86', '#B5F8FE',
   '#FBD87F', '#FCE4D8', '#6D597A', '#B56576', '#E56B6F',
   '#FFE66D', '#FF6633', '#FF33FF', '#FFFF99', '#00B3E6',
   '#E6B333', '#3366E6', '#FFB399', '#999966', '#99FF99', '#B34D4D',
@@ -47,19 +48,6 @@ let catCol = ['#FAB3A9', '#7FB285', '#463239', '#ED6B86', '#B5F8FE',
   '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
   '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
   '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
-catCol.reverse();
-// let catCol = ['#FF6633', '#FF33FF', '#FFFF99', '#00B3E6',
-//   '#E6B333', '#3366E6', '#FFB399', '#999966', '#99FF99', '#B34D4D',
-//   '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
-//   '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
-//   '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
-//   '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
-//   '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
-//   '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
-//   '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
-//   '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
-
-let colorPool = catCol;
 
 function getColor() {
   const optionsLeft = colorPool.length;
@@ -72,6 +60,15 @@ function getColor() {
 function dropColor(c) {
   colorPool.push(c);
 }
+
+const openNotificationWithIcon = ({ type, total, limit }) => {
+  notification[type]({
+    duration: 10,
+    message: 'Sub tree too large to display',
+    description:
+      `The selected sub tree has ${total} leaf nodes. Only the first ${limit} will be shown on the map. Consider splitting the selection into smaller sub trees.`
+  });
+};
 
 class Explore extends React.Component {
   constructor(props) {
@@ -127,6 +124,10 @@ class Explore extends React.Component {
           }
         }
       });
+      if (this.state.node2LeafTaxonKeys[node.key].length > 200) {
+        console.log('warning - you have selected over 200 taxa');
+        openNotificationWithIcon({ type: 'warning', total: this.state.node2LeafTaxonKeys[node.key].length, limit: 200 })
+      }
     }
   }
 
@@ -141,7 +142,7 @@ class Explore extends React.Component {
         <div className="treeCard">
           <PhylogenyTree nodeIdMap={this.state.nodeIdMap} tree={this.state.tree} onToggle={this.onToggle} onSelect={this.onSelect} highlighted={this.state.selected}></PhylogenyTree>
         </div>
-        {this.state.showMap ? <Map shouldRefresh={shouldRefresh} selected={this.state.selected} max={catCol.length} totalSelected={this.state.totalSelected}></Map> : <div>Loading</div>}
+        {this.state.showMap ? <Map shouldRefresh={shouldRefresh} selected={this.state.selected} max={colorPool.length} totalSelected={this.state.totalSelected}></Map> : <div>Loading</div>}
       </SplitPane>
     );
   }
