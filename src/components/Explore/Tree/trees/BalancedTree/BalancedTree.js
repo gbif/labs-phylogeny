@@ -258,7 +258,7 @@ export function BalancedTree({
       if (attempts > 50) {
         clearInterval(scrollToElementInterval);
       }
-    }, 100);
+    }, 200);
   }, [elementHeight]);
 
   const containerWidth = (treeData.childrenLength * multiplier * 1.8 + 400) || 1000; // add some extra (* n + m) due to branch node size and labels
@@ -285,7 +285,6 @@ export function BalancedTree({
         onSelect={leafIndex => {
           const selectedNode = nodeIdMap[leafIndex];
           const selectedLeafIndex = selectedNode.leafIndex;
-          console.log(selectedLeafIndex);
           setHighlightedLeaf(selectedLeafIndex);
           scrollToItem({ leafIndex: selectedLeafIndex });
           setQ('');
