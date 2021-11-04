@@ -99,7 +99,7 @@ class Map extends Component {
 
   addLayer = (layer) => {
     const query = layer.visibleTaxonKeys.reduce((str, key) => str += `&taxonKey=${key}`, '');
-    var tileString = "https://api.gbif.org/v2/map/occurrence/adhoc/{z}/{x}/{y}.mvt?style=scaled.circles&mode=GEO_CENTROID&occurrenceStatus=present&srs=EPSG%3A3857&squareSize=512" + query;
+    var tileString = "https://api.gbif.org/v2/map/occurrence/adhoc/{z}/{x}/{y}.mvt?style=scaled.circles&mode=GEO_CENTROID&occurrenceStatus=present&srs=EPSG%3A3857&squareSize=512&hasGeospatialIssue=false&occurrenceStatus=present" + query;
     this.map.addLayer(
       {
         id: "occurrences_" + layer.layerName,
