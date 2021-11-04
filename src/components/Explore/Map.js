@@ -149,11 +149,11 @@ class Map extends Component {
   render() {
     return (
       <div className="mapArea">
-        {this.props.totalSelected > this.props.max &&
+        {/* {this.props.totalSelected > this.props.max &&
           <div style={{ zIndex: 100, position: 'absolute', background: 'tomato', color: 'white', padding: '5px 10px', margin: 10, borderRadius: 3, fontWeight: 500 }}>
             Only showing {this.props.selected.length} of {this.props.totalSelected} layers
           </div>
-        }
+        } */}
         <div style={{ zIndex: 100, position: 'absolute', right: 30, top: 30}}>
           <Dropdown overlay={this.state.menu}>
             <Button>
