@@ -125,7 +125,6 @@ class Explore extends React.Component {
         }
       });
       if (this.state.node2LeafTaxonKeys[node.key].length > 200) {
-        console.log('warning - you have selected over 200 taxa');
         openNotificationWithIcon({ type: 'warning', total: this.state.node2LeafTaxonKeys[node.key].length, limit: 200 })
       }
     }
@@ -217,6 +216,6 @@ function buildTree(nameMap, node, parentKey, index, nodeIdMap) {
   }
 
   let tree = recursive(nameMap, node, parentKey, index, nodeIdMap);
-  console.log(tree.childrenLength);
+
   return { tree, node2LeafTaxonKeys };
 }
