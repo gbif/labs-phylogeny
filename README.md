@@ -1,8 +1,6 @@
-[![Build Status](https://travis-ci.org/gbif/registry-console.svg?branch=bug-fix)](https://travis-ci.org/gbif/registry-console)
+# A test area for phylogeography using GBIF mediated data
 
-# A frontend to display and manage the GBIF registry
-
-> Under development
+> This is a labs project and intended as a place to try out ideas
 
 ----------
 
