@@ -108,9 +108,9 @@ function SampleTree({ onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, on
 
   if (node.size * elementHeight < 10 && childrenLength > 0) {
     const totalDepth = node.childrenLength * multiplier;
-    return <li 
-      style={{ 
-        height: node.size * elementHeight, 
+    return <li
+      style={{
+        height: node.size * elementHeight,
         paddingLeft: depth,
         background: !visibleNames && isHighlighted ? isHighlighted.color + 'cc' : null
       }}
@@ -122,17 +122,17 @@ function SampleTree({ onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, on
           backgroundColor: isHighlighted ? isHighlighted.color : null,
           boxShadow: isHighlightedLeaf ? '0 0 0 2px #ff6868' : null
         }}
-        onMouseEnter={e => onNodeEnter({e, title: nodeTitle })}
-        onMouseLeave={e => onNodeLeave({e, title: nodeTitle })}
+        onMouseEnter={e => onNodeEnter({ e, title: nodeTitle })}
+        onMouseLeave={e => onNodeLeave({ e, title: nodeTitle })}
         // gbtitle={nodeTitle}
         id={`${childrenLength === 0 ? `gb-tree-node-${node.leafIndex}` : null}`}
       >
         {!visibleNames && <span className="gb-tree-color-click-area"></span>}
       </span>
       <div className="gb-tree-content-node" >
-        {node.name && <span 
-          className="gb-tree-hover-title" 
-          >
+        {node.name && <span
+          className="gb-tree-hover-title"
+        >
         </span>}
       </div>
       <div className="gb-tree-subtree-placeholder" style={{ width: totalDepth }}></div>
@@ -155,8 +155,8 @@ function SampleTree({ onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, on
         backgroundColor: isHighlighted ? isHighlighted.color : null,
         boxShadow: isHighlightedLeaf ? '0 0 0 2px #ff6868' : null
       }}
-      onMouseEnter={e => onNodeEnter({e, title: nodeTitle })}
-      onMouseLeave={e => onNodeLeave({e, title: nodeTitle })}
+      onMouseEnter={e => onNodeEnter({ e, title: nodeTitle })}
+      onMouseLeave={e => onNodeLeave({ e, title: nodeTitle })}
       // {...titleProp}
       id={`${childrenLength === 0 ? `gb-tree-node-${node.leafIndex}` : null}`}
     >
@@ -233,11 +233,11 @@ export function BalancedTree({
     setTree(t);
   }, [treeData]);
 
-  const onNodeEnter = useCallback(({title}) => {
+  const onNodeEnter = useCallback(({ title }) => {
     setHoveredNode(title);
   }, []);
 
-  const onNodeLeave = useCallback(({title}) => {
+  const onNodeLeave = useCallback(({ title }) => {
     setHoveredNode();
   }, []);
 
@@ -248,11 +248,13 @@ export function BalancedTree({
       let el = document.getElementById(`gb-tree-node-${leafIndex}`);
       attempts++;
       if (el) {
-        setTimeout(e => el.scrollIntoView({
-          inline: 'center',
-          behavior: 'smooth',
-          block: 'center'
-        }), 100);
+        setTimeout(e => {
+          el.scrollIntoView({
+            inline: 'center',
+            behavior: 'smooth',
+            block: 'center'
+          });
+        }, 800);
         clearInterval(scrollToElementInterval);
       }
       if (attempts > 50) {
@@ -262,8 +264,8 @@ export function BalancedTree({
   }, [elementHeight]);
 
   const containerWidth = (treeData.childrenLength * multiplier * 1.8 + 400) || 1000; // add some extra (* n + m) due to branch node size and labels
-  const minMultiplier = (50/treeData.childrenLength) || 1;
-  const maxMultiplier = (3000/treeData.childrenLength) || 10000;
+  const minMultiplier = (50 / treeData.childrenLength) || 1;
+  const maxMultiplier = (3000 / treeData.childrenLength) || 10000;
 
   const treeProps = {
     onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, onToggle, elementHeight, multiplier
@@ -295,7 +297,7 @@ export function BalancedTree({
         {leafSuggestions.filter(i => i.label.indexOf(q.toLowerCase()) > -1).map(o => <Option key={o.key} value={o.key} label={o.label}><span dangerouslySetInnerHTML={{ __html: o.label }}></span> </Option>)}
       </AutoComplete>
     </div>
-    {hoveredNode && <div className="gb-snack-bar" dangerouslySetInnerHTML={{__html: hoveredNode}}>
+    {hoveredNode && <div className="gb-snack-bar" dangerouslySetInnerHTML={{ __html: hoveredNode }}>
     </div>}
     <div className="tree-controls">
       <Radio.Group value={fontSize} onChange={e => setFontSize(e.target.value)}>
