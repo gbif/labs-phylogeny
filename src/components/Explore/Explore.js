@@ -36,19 +36,6 @@ import SplitPane from "react-split-pane"; // https://github.com/tomkp/react-spli
 import _ from "lodash";
 import './explore.css';
 
-// let colorPool = ['#FAB3A9', '#7FB285', '#463239', '#ED6B86', '#B5F8FE',
-//   '#FBD87F', '#FCE4D8', '#6D597A', '#B56576', '#E56B6F',
-//   '#FFE66D', '#FF6633', '#FF33FF', '#FFFF99', '#00B3E6',
-//   '#E6B333', '#3366E6', '#FFB399', '#999966', '#99FF99', '#B34D4D',
-//   '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
-//   '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
-//   '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
-//   '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
-//   '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
-//   '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
-//   '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
-//   '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
-
 let colorPool = [
   '#a6cee3',
   '#1f78b4',
@@ -63,17 +50,23 @@ let colorPool = [
   '#ffff99',
   '#b15928',
 ];
+const preferedColors = JSON.parse(JSON.stringify(colorPool));
+
+const randomColor = () => `#${Math.floor(Math.random()*16777215).toString(16)}`.padEnd(7, 8);
 
 function getColor() {
   const optionsLeft = colorPool.length;
-  if (optionsLeft === 0) return '#FAB3A9';
+  console.log(optionsLeft);
+  if (optionsLeft === 0) return randomColor();
   const randomIndex = Math.floor(Math.random() * optionsLeft);
   const c = colorPool.splice(randomIndex, 1)[0];
   return c;
 }
 
 function dropColor(c) {
-  colorPool.push(c);
+  if (preferedColors.indexOf(c) > -1) {
+    colorPool.push(c);
+  }
 }
 
 const openNotificationWithIcon = ({ type, total, limit }) => {
@@ -156,7 +149,7 @@ class Explore extends React.Component {
         <div className="treeCard">
           <PhylogenyTree nodeIdMap={this.state.nodeIdMap} tree={this.state.tree} onToggle={this.onToggle} onSelect={this.onSelect} highlighted={this.state.selected}></PhylogenyTree>
         </div>
-        {this.state.showMap ? <Map shouldRefresh={shouldRefresh} selected={this.state.selected} max={colorPool.length} totalSelected={this.state.totalSelected}></Map> : <div>Loading</div>}
+        {this.state.showMap ? <Map shouldRefresh={shouldRefresh} selected={this.state.selected} totalSelected={this.state.totalSelected}></Map> : <div>Loading</div>}
       </SplitPane>
     );
   }
