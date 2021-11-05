@@ -4,6 +4,9 @@ import { withRouter } from "react-router-dom";
 import _ from "lodash";
 import axios from "axios";
 import qs from "qs";
+import withContext from "../../withContext"
+
+const { TextArea } = Input;
 
 const { Option } = AutoComplete;
 const FormItem = Form.Item;
@@ -51,7 +54,7 @@ class Otl extends React.Component {
       const treeResponse = await axios.get(
         `//www.gbif.org/api/otl/newick?ott_id=${_.get(response, "data.ott_id")}`
       );
-      this.props.setTree(_.get(treeResponse, "data.newick"));
+      this.props.setNewick(_.get(treeResponse, "data.newick"));
       this.setState({ loading: false });
     } catch (err) {
       console.log(err.response);
@@ -82,6 +85,8 @@ class Otl extends React.Component {
   };
   render() {
     const { names, loading, node_id } = this.state;
+    const { setNewick, newick, startParsing } = this.props;
+    
     return (
       <React.Fragment>
         <FormItem
@@ -149,16 +154,17 @@ class Otl extends React.Component {
             allowClear
           />
         </FormItem>
-        <Row>
-          <Col flex="auto"></Col>
-          <Col>
-            <h3>OR</h3>
-          </Col>
-          <Col flex="auto"></Col>
-        </Row>
+        <FormItem>
+        <TextArea style={{ marginBottom: '10px' }} value={newick} onChange={e => setNewick(e.target.value)} rows={10} placeholder="Enter your NEWICK string here" />
+
+        </FormItem>
+        <Button type="primary" onClick={startParsing} disabled={!newick}>Next</Button>
+
       </React.Fragment>
     );
   }
 }
 
-export default withRouter(Otl);
+const mapContextToProps = ({ setNewick, setRawTree, setNames, setMatchedNames, newick }) => ({ setNewick, setRawTree, setNames, setMatchedNames, newick });
+
+export default withRouter(withContext(mapContextToProps)(Otl));
