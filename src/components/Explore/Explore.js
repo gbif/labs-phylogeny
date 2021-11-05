@@ -29,6 +29,7 @@ import React from "react";
 import { withRouter } from "react-router-dom";
 import PhylogenyTree from "./Tree";
 import Map from './Map';
+import Legend from './Legend';
 import { notification } from 'antd';
 
 import withContext from "../withContext";
@@ -56,7 +57,6 @@ const randomColor = () => `#${Math.floor(Math.random()*16777215).toString(16)}`.
 
 function getColor() {
   const optionsLeft = colorPool.length;
-  console.log(optionsLeft);
   if (optionsLeft === 0) return randomColor();
   const randomIndex = Math.floor(Math.random() * optionsLeft);
   const c = colorPool.splice(randomIndex, 1)[0];
@@ -113,6 +113,26 @@ class Explore extends React.Component {
     this.setState({ shouldRefresh: true })
   }
 
+  updateOrdering = ({ orderedItems }) => {
+    let s = {};
+    orderedItems.forEach(x => {
+      s[x.key] = x;
+    });
+    this.setState({selected: s});
+  };
+
+  clearSelection = () => {
+    this.setState({selected: {}})
+  };
+
+  gotoNode = ({ node }) => {
+    this.setState({focusedNode: {node, leafIndex: node.firstLeafIndex}});
+  };
+
+  updateVisiblity = ({ item }) => {
+    this.setState({selected: {...this.state.selected, [item.key]: item}});
+  };
+
   onToggle = ({ selected }) => {
     const node = this.state.nodeIdMap[selected];
     if (this.state.selected[node.key]) {
@@ -128,7 +148,13 @@ class Explore extends React.Component {
             color: getColor(),
             taxonKeys: this.state.node2LeafTaxonKeys[node.key],
             visibleTaxonKeys: this.state.node2LeafTaxonKeys[node.key].slice(0, 200),
-            layerName: node.key
+            layerName: node.key,
+            title: node.title,
+            firstLeaf: node.firstLeaf,
+            firstLeafIndex: node.firstLeafIndex,
+            lastLeaf: node.lastLeaf,
+            leafIndex: node.leafIndex,
+            visible: true
           }
         }
       });
@@ -145,11 +171,14 @@ class Explore extends React.Component {
       shouldRefresh = true;
     }
     return (
-      <SplitPane split="vertical" minSize={300} defaultSize={700} style={{ overflow: 'hidden', height: 'calc(100vh - 68px)' }} onDragFinished={this.refreshSizes}>
+      <SplitPane split="vertical" minSize={200} defaultSize={600} primary="second" style={{ overflow: 'hidden', height: 'calc(100vh - 68px)' }} onDragFinished={this.refreshSizes}>
         <div className="treeCard">
-          <PhylogenyTree nodeIdMap={this.state.nodeIdMap} tree={this.state.tree} onToggle={this.onToggle} onSelect={this.onSelect} highlighted={this.state.selected}></PhylogenyTree>
+          <PhylogenyTree focusedNode={this.state.focusedNode} nodeIdMap={this.state.nodeIdMap} tree={this.state.tree} onToggle={this.onToggle} onSelect={this.onSelect} highlighted={this.state.selected}></PhylogenyTree>
         </div>
-        {this.state.showMap ? <Map shouldRefresh={shouldRefresh} selected={this.state.selected} totalSelected={this.state.totalSelected}></Map> : <div>Loading</div>}
+        <SplitPane split="horizontal" defaultSize={200} primary="second" style={{ overflow: 'hidden', height: 'calc(100vh - 68px)' }} onDragFinished={this.refreshSizes}>
+          {this.state.showMap ? <Map shouldRefresh={shouldRefresh} selected={this.state.selected} totalSelected={this.state.totalSelected}></Map> : <div>Loading</div>}
+          <Legend gotoNode={this.gotoNode} clearSelection={this.clearSelection} updateVisiblity={this.updateVisiblity} updateOrdering={this.updateOrdering} layers={this.state.selected} />
+        </SplitPane>
       </SplitPane>
     );
   }
@@ -204,6 +233,7 @@ function buildTree(nameMap, node, parentKey, index, nodeIdMap) {
       leafIndex++;
       node2LeafTaxonKeys[n.key] = n.taxonKey ? [n.taxonKey] : [];
       n.firstLeaf = n.title;
+      n.firstLeafIndex = n.leafIndex;
       n.lastLeaf = n.title;
       n.childrenLength = 0;
     }
@@ -215,8 +245,10 @@ function buildTree(nameMap, node, parentKey, index, nodeIdMap) {
       n.childrenLength = childrenLength;
       const childTaxa = _.union(...(n.children.map(x => node2LeafTaxonKeys[x.key])));
       const firstLeaf = n.children[0].firstLeaf;
+      const firstLeafIndex = n.children[0].firstLeafIndex;
       const lastLeaf = n.children[n.children.length - 1].lastLeaf;
       n.firstLeaf = firstLeaf;
+      n.firstLeafIndex = firstLeafIndex;
       n.lastLeaf = lastLeaf;
       node2LeafTaxonKeys[n.key] = childTaxa;
     }

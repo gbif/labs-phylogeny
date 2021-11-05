@@ -100,7 +100,6 @@ function SampleTree({ onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, on
   node.children = node.children || [];
   const childrenLength = node.children.length;
   const depth = node.branch_length * multiplier || 0;
-  const nodeTitle = childrenLength === 0 ? node.title : `${node.firstLeaf} - ${node.lastLeaf}`
   // const titleProp = !visibleNames ? { gbtitle: nodeTitle } : {};
   const treeProps = {
     onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, onToggle, elementHeight, multiplier
@@ -122,8 +121,8 @@ function SampleTree({ onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, on
           backgroundColor: isHighlighted ? isHighlighted.color : null,
           boxShadow: isHighlightedLeaf ? '0 0 0 2px #ff6868' : null
         }}
-        onMouseEnter={e => onNodeEnter({ e, title: nodeTitle })}
-        onMouseLeave={e => onNodeLeave({ e, title: nodeTitle })}
+        onMouseEnter={e => onNodeEnter({ e, node: node })}
+        onMouseLeave={e => onNodeLeave({ e, node: node })}
         // gbtitle={nodeTitle}
         id={`${childrenLength === 0 ? `gb-tree-node-${node.leafIndex}` : null}`}
       >
@@ -155,8 +154,8 @@ function SampleTree({ onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, on
         backgroundColor: isHighlighted ? isHighlighted.color : null,
         boxShadow: isHighlightedLeaf ? '0 0 0 2px #ff6868' : null
       }}
-      onMouseEnter={e => onNodeEnter({ e, title: nodeTitle })}
-      onMouseLeave={e => onNodeLeave({ e, title: nodeTitle })}
+      onMouseEnter={e => onNodeEnter({ e, node })}
+      onMouseLeave={e => onNodeLeave({ e, node })}
       // {...titleProp}
       id={`${childrenLength === 0 ? `gb-tree-node-${node.leafIndex}` : null}`}
     >
@@ -182,6 +181,7 @@ export function BalancedTree({
   className,
   onToggle,
   highlighted,
+  focusedNode,
   tree: treeData = acacia,
   nodeIdMap,
   ...props
@@ -233,13 +233,19 @@ export function BalancedTree({
     setTree(t);
   }, [treeData]);
 
-  const onNodeEnter = useCallback(({ title }) => {
-    setHoveredNode(title);
+  const onNodeEnter = useCallback(({ node }) => {
+    setHoveredNode(node);
   }, []);
 
-  const onNodeLeave = useCallback(({ title }) => {
+  const onNodeLeave = useCallback(({ node }) => {
     setHoveredNode();
   }, []);
+
+  useEffect(() => {
+    if (focusedNode) {
+      scrollToItem({leafIndex: focusedNode.leafIndex});
+    }
+  }, [focusedNode]);
 
   const scrollToItem = useCallback(({ leafIndex = 0 }) => {
     let attempts = 0;
@@ -266,6 +272,8 @@ export function BalancedTree({
   const containerWidth = (treeData.childrenLength * multiplier * 1.8 + 400) || 1000; // add some extra (* n + m) due to branch node size and labels
   const minMultiplier = (50 / treeData.childrenLength) || 1;
   const maxMultiplier = (3000 / treeData.childrenLength) || 10000;
+
+  const showScale = !Number.isNaN(treeData.childrenLength);
 
   const treeProps = {
     onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, onToggle, elementHeight, multiplier
@@ -297,7 +305,7 @@ export function BalancedTree({
         {leafSuggestions.filter(i => i.label.indexOf(q.toLowerCase()) > -1).map(o => <Option key={o.key} value={o.key} label={o.label}><span dangerouslySetInnerHTML={{ __html: o.label }}></span> </Option>)}
       </AutoComplete>
     </div>
-    {hoveredNode && <div className="gb-snack-bar" dangerouslySetInnerHTML={{ __html: hoveredNode }}>
+    {hoveredNode && <div className="gb-snack-bar" dangerouslySetInnerHTML={{ __html: hoveredNode.title || `${hoveredNode.firstLeaf} - ${hoveredNode.lastLeaf}` }}>
     </div>}
     <div className="tree-controls">
       <Radio.Group value={fontSize} onChange={e => setFontSize(e.target.value)}>
@@ -306,9 +314,9 @@ export function BalancedTree({
         <Radio.Button value="12">M</Radio.Button>
         <Radio.Button value="15">L</Radio.Button>
       </Radio.Group>
-      <label style={{ marginLeft: 12 }}>Horizontal scale
+      {showScale && <label style={{ marginLeft: 12 }}>Horizontal scale
         <input style={{ marginLeft: 12 }} type="range" min={minMultiplier} max={maxMultiplier} value={multiplier} onChange={e => setMultiplier(e.target.value)} />
-      </label>
+      </label>}
     </div>
     <StyledTree
       ref={ref}
