@@ -181,6 +181,7 @@ export function BalancedTree({
   className,
   onToggle,
   highlighted,
+  focusedNode,
   tree: treeData = acacia,
   nodeIdMap,
   ...props
@@ -239,6 +240,12 @@ export function BalancedTree({
   const onNodeLeave = useCallback(({ node }) => {
     setHoveredNode();
   }, []);
+
+  useEffect(() => {
+    if (focusedNode) {
+      scrollToItem({leafIndex: focusedNode.leafIndex});
+    }
+  }, [focusedNode]);
 
   const scrollToItem = useCallback(({ leafIndex = 0 }) => {
     let attempts = 0;

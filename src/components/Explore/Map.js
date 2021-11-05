@@ -72,7 +72,9 @@ class Map extends Component {
   }
 
   getLayersAsArray = (selected) => {
-    return Object.keys(selected).map(x => selected[x]);
+    return Object.keys(selected).map(x => selected[x])
+    .sort((firstEl, secondEl) => { return secondEl.sortIndex - firstEl.sortIndex })
+    .filter(x => x.visible);
   }
 
   removeLayers = prev => {
