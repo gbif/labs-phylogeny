@@ -145,7 +145,7 @@ class Explore extends React.Component {
       shouldRefresh = true;
     }
     return (
-      <SplitPane split="vertical" minSize={300} defaultSize={700} style={{ overflow: 'hidden', height: 'calc(100vh - 68px)' }} onDragFinished={this.refreshSizes}>
+      <SplitPane split="vertical" minSize={200} defaultSize={600} primary="second" style={{ overflow: 'hidden', height: 'calc(100vh - 68px)' }} onDragFinished={this.refreshSizes}>
         <div className="treeCard">
           <PhylogenyTree nodeIdMap={this.state.nodeIdMap} tree={this.state.tree} onToggle={this.onToggle} onSelect={this.onSelect} highlighted={this.state.selected}></PhylogenyTree>
         </div>
