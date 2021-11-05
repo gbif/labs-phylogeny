@@ -86,7 +86,7 @@ class Otl extends React.Component {
   render() {
     const { names, loading, node_id } = this.state;
     const { setNewick, newick, startParsing } = this.props;
-    
+
     return (
       <React.Fragment>
         <FormItem
@@ -119,7 +119,7 @@ class Otl extends React.Component {
           {...formItemLayout}
           help={
             <span>
-              Or an example:{" "}
+              Or try an example:{" "}
               <Button
                 type="link"
                 onClick={() =>
