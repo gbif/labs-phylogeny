@@ -6,10 +6,28 @@ import { MenuOutlined, BranchesOutlined, DeleteOutlined, EyeInvisibleOutlined, E
 import { Tooltip } from 'antd';
 
 const SortableItem = SortableElement(({ value, gotoNode, removeNode, updateVisiblity, updateColor }) => {
+  const [color, setColor] = useState(value.color);
+  
+  useEffect(() => {
+      // Update debounced value after delay
+      const handler = setTimeout(() => {
+        if (color !== value.color)
+        updateColor({ node: value, color });
+      }, 200);
+      // Cancel the timeout if value changes (also on delay change or unmount)
+      // This is how we prevent debounced value from updating if value is changed ...
+      // .. within the delay period. Timeout gets cleared and restarted.
+      return () => {
+        clearTimeout(handler);
+      };
+    },
+    [value, updateColor, color] // Only re-call effect if value or delay changes
+  );
+
   const title = value.title ? value.title : `${value.firstLeaf} - ${value.lastLeaf}`;
   return <li className="gb-tree-legend-item">
     <DragHandle style={{ display: 'inline-block' }} />
-    <input className="gb-tree-legend-item-color" type="color" onChange={e => updateColor({node: value, color: e.target.value})} value={value.color} />
+    <input className="gb-tree-legend-item-color" type="color" onChange={e => setColor(e.target.value)} value={color} />
     <div className="gb-tree-legend-item-action">
       <Tooltip title="Toggle visibility in map">
         {!value.visible && <EyeInvisibleOutlined onClick={e => updateVisiblity({ item: { ...value, visible: true } })} />}
@@ -21,8 +39,8 @@ const SortableItem = SortableElement(({ value, gotoNode, removeNode, updateVisib
         <BranchesOutlined onClick={e => gotoNode({ node: value })} />
       </Tooltip>
     </div>
-    <div dangerouslySetInnerHTML={{ __html: title }} style={{ flex: '1 1 auto' }}></div>
-    <DeleteOutlined onClick={e => removeNode({node: value})} />
+    <div dangerouslySetInnerHTML={{ __html: title }} style={{ flex: '1 1 auto', color: value.visible ? null : '#aaa' }}></div>
+    <DeleteOutlined onClick={e => removeNode({ node: value })} />
   </li>
 });
 
