@@ -125,6 +125,17 @@ class Explore extends React.Component {
     this.setState({selected: {}})
   };
 
+  removeNode = ({ node }) => {
+    let n = { ...this.state.selected };
+    delete n[node.key];
+    dropColor(this.state.selected[node.key].color);
+    this.setState({ selected: n })
+  }
+
+  updateColor = ({ color, node }) => {
+    this.setState({selected: {...this.state.selected, [node.key]: {...node, color}}});
+  }
+
   gotoNode = ({ node }) => {
     this.setState({focusedNode: {node, leafIndex: node.firstLeafIndex}});
   };
@@ -136,10 +147,7 @@ class Explore extends React.Component {
   onToggle = ({ selected }) => {
     const node = this.state.nodeIdMap[selected];
     if (this.state.selected[node.key]) {
-      let n = { ...this.state.selected };
-      delete n[node.key];
-      dropColor(this.state.selected[node.key].color);
-      this.setState({ selected: n })
+      this.removeNode({node: node})
     } else {
       if (!this.state.node2LeafTaxonKeys[node.key]) return;
       this.setState({
@@ -177,7 +185,7 @@ class Explore extends React.Component {
         </div>
         <SplitPane split="horizontal" defaultSize={200} primary="second" style={{ overflow: 'hidden', height: 'calc(100vh - 68px)' }} onDragFinished={this.refreshSizes}>
           {this.state.showMap ? <Map shouldRefresh={shouldRefresh} selected={this.state.selected} totalSelected={this.state.totalSelected}></Map> : <div>Loading</div>}
-          <Legend gotoNode={this.gotoNode} clearSelection={this.clearSelection} updateVisiblity={this.updateVisiblity} updateOrdering={this.updateOrdering} layers={this.state.selected} />
+          <Legend removeNode={this.removeNode} updateColor={this.updateColor} gotoNode={this.gotoNode} clearSelection={this.clearSelection} updateVisiblity={this.updateVisiblity} updateOrdering={this.updateOrdering} layers={this.state.selected} />
         </SplitPane>
       </SplitPane>
     );

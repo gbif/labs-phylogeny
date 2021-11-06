@@ -5,11 +5,11 @@ import './legend.css';
 import { MenuOutlined, BranchesOutlined, DeleteOutlined, EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 
-const SortableItem = SortableElement(({ value, gotoNode, updateVisiblity }) => {
+const SortableItem = SortableElement(({ value, gotoNode, removeNode, updateVisiblity, updateColor }) => {
   const title = value.title ? value.title : `${value.firstLeaf} - ${value.lastLeaf}`;
   return <li className="gb-tree-legend-item">
     <DragHandle style={{ display: 'inline-block' }} />
-    <div className="gb-tree-legend-item-color" style={{ backgroundColor: value.color }}></div>
+    <input className="gb-tree-legend-item-color" type="color" onChange={e => updateColor({node: value, color: e.target.value})} value={value.color} />
     <div className="gb-tree-legend-item-action">
       <Tooltip title="Toggle visibility in map">
         {!value.visible && <EyeInvisibleOutlined onClick={e => updateVisiblity({ item: { ...value, visible: true } })} />}
@@ -22,14 +22,15 @@ const SortableItem = SortableElement(({ value, gotoNode, updateVisiblity }) => {
       </Tooltip>
     </div>
     <div dangerouslySetInnerHTML={{ __html: title }} style={{ flex: '1 1 auto' }}></div>
+    <DeleteOutlined onClick={e => removeNode({node: value})} />
   </li>
 });
 
-const SortableList = SortableContainer(({ items, gotoNode, updateVisiblity }) => {
+const SortableList = SortableContainer(({ items, removeNode, gotoNode, updateVisiblity, updateColor }) => {
   return (
     <ul>
       {items.map((value, index) => (
-        <SortableItem key={`item-${value.key}`} index={index} value={value} updateVisiblity={updateVisiblity} gotoNode={gotoNode} />
+        <SortableItem key={`item-${value.key}`} index={index} value={value} updateVisiblity={updateVisiblity} gotoNode={gotoNode} updateColor={updateColor} removeNode={removeNode} />
       ))}
     </ul>
   );
@@ -37,7 +38,7 @@ const SortableList = SortableContainer(({ items, gotoNode, updateVisiblity }) =>
 
 const DragHandle = sortableHandle(() => <MenuOutlined style={{ color: '#aaa', marginRight: 12 }} />);
 
-export default function Legend({ clearSelection, layers, gotoNode, updateVisiblity, updateOrdering, ...props }) {
+export default function Legend({ clearSelection, removeNode, layers, gotoNode, updateColor, updateVisiblity, updateOrdering, ...props }) {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
@@ -72,7 +73,7 @@ export default function Legend({ clearSelection, layers, gotoNode, updateVisibli
       <div><DeleteOutlined onClick={e => clearSelection()} /></div>
     </div>
     <div className="legendList">
-      <SortableList updateVisiblity={updateVisiblity} gotoNode={gotoNode} items={items} onSortEnd={props => onSortEnd({ ...props, items })} useDragHandle />
+      <SortableList removeNode={removeNode} updateVisiblity={updateVisiblity} updateColor={updateColor} gotoNode={gotoNode} items={items} onSortEnd={props => onSortEnd({ ...props, items })} useDragHandle />
       {items.length === 0 && <div style={{ textAlign: 'center', color: '#aaa', margin: 12 }}>
         Select a node in the tree to get started
       </div>}

@@ -66,3 +66,18 @@
   flex: 1 1 auto;
   overflow: auto;
 }
+
+input[type="color"] {
+  border: none;
+  padding: 0;
+  overflow: hidden;
+  display: block;
+  -webkit-appearance: none;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+	padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+	border: none;
+}
