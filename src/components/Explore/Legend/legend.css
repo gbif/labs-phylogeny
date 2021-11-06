@@ -26,8 +26,6 @@
 }
 .gb-tree-legend-item > div {
   display: inline-block;
-  white-space: nowrap;
-  text-overflow: ellipsis;
   flex: 0 0 auto;
 }
 .gb-tree-legend-item-color {
