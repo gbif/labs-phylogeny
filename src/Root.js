@@ -3,7 +3,7 @@ import { Steps, Button } from 'antd';
 import { withRouter, Route, Switch, Link } from 'react-router-dom';
 
 import About from './components/About';
-import Upload from './components/Upload';
+import InputData from './components/InputData';
 import Match from './components/Match';
 import Explore from './components/Explore';
 
@@ -47,7 +47,7 @@ class Root extends React.Component {
         <div>
           <Switch>
             <Route path="/" exact component={About}/>
-            <Route path="/phylogeny" exact component={Upload}/>
+            <Route path="/phylogeny" exact component={InputData}/>
             <Route path="/match" exact component={Match}/>
             <Route path="/explore" exact component={Explore}/>
           </Switch>
