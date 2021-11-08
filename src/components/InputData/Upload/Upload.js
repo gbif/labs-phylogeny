@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Card, Input, Row } from 'antd';
+import { Button, Input, Row } from 'antd';
 import { withRouter } from 'react-router-dom';
 import examples from './examples.json';
 import withContext from "../../withContext"

@@ -243,7 +243,7 @@ export function BalancedTree({
 
   useEffect(() => {
     if (focusedNode) {
-      scrollToItem({leafIndex: focusedNode.leafIndex});
+      scrollToItem({ leafIndex: focusedNode.leafIndex });
     }
   }, [focusedNode]);
 
@@ -279,6 +279,12 @@ export function BalancedTree({
     onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, onToggle, elementHeight, multiplier
   };
 
+  let containerHeight = 300;
+  if (ref && ref.current) {
+    containerHeight = ref.current.clientHeight - 40; //padding removed
+  }
+  const fittedFontSize = visibleNode ? containerHeight / (visibleNode.size * 1.15) : 0.1;
+
   return <div className="treeArea" style={{ display: 'flex', flexDirection: 'column' }}>
     <div className="tree-controls">
       <AutoComplete
@@ -309,10 +315,12 @@ export function BalancedTree({
     </div>}
     <div className="tree-controls">
       <Radio.Group value={fontSize} onChange={e => setFontSize(e.target.value)}>
-        <Radio.Button value="3">XS</Radio.Button>
-        <Radio.Button value="8">S</Radio.Button>
-        <Radio.Button value="12">M</Radio.Button>
-        <Radio.Button value="15">L</Radio.Button>
+        {fittedFontSize < 3 && <Radio.Button value={fittedFontSize}>Fit</Radio.Button>}
+        {/* {visibleNode && visibleNode.size > 500 && <Radio.Button value="1">XS</Radio.Button>} */}
+        <Radio.Button value="3">S</Radio.Button>
+        <Radio.Button value="8">M</Radio.Button>
+        <Radio.Button value="12">L</Radio.Button>
+        <Radio.Button value="15">XL</Radio.Button>
       </Radio.Group>
       {showScale && <label style={{ marginLeft: 12 }}>Horizontal scale
         <input style={{ marginLeft: 12 }} type="range" min={minMultiplier} max={maxMultiplier} value={multiplier} onChange={e => setMultiplier(e.target.value)} />
