@@ -54,9 +54,9 @@ class InputData extends React.Component {
           <Otl startParsing={this.startParsing}/>
 
           </TabPane>
-{/*           <TabPane tab="Generate tree" key="3">
+          <TabPane tab="Generate tree" key="3">
             <TreeGenerator startParsing={this.startParsing} />
-          </TabPane> */}
+          </TabPane>
         </Tabs>
         </Card>
         
