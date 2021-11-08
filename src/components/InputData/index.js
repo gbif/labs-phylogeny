@@ -1,11 +1,10 @@
 import React from 'react';
-import { Button, Card, Input, Row, Tabs } from 'antd';
+import { Card,Tabs } from 'antd';
 import { withRouter } from 'react-router-dom';
 import parser from 'biojs-io-newick';
 
 import Otl from './OTL'
 import Upload from './Upload'
-import TreeGenerator from './TreeGenerator'
 
 import withContext from "../withContext"
 const { TabPane } = Tabs;
