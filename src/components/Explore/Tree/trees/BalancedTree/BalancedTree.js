@@ -2,8 +2,10 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { StyledTree } from './styles2';
 import acacia from './simple2.json';
 import './tree.css';
-import { Radio, AutoComplete } from 'antd';
+import { Radio, AutoComplete, Tooltip } from 'antd';
 import useDraggableScroll from 'use-draggable-scroll';
+import { useHotkeys } from 'react-hotkeys-hook';
+
 const Option = AutoComplete.Option;
 
 const defaultFontSize = 12;
@@ -34,6 +36,36 @@ const useScrollAware = (ref) => {
   }, []);
 
   return [scrollTop];
+};
+
+export const useMousePosition = (ref) => {
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  let throttleTimeout = null;
+
+  const onMove = (e) => {
+    if (throttleTimeout === null) {
+      throttleTimeout = setTimeout(() => {
+        requestAnimationFrame(() => {
+          var rect = ref.current.getBoundingClientRect();
+          var x = e.clientX - rect.left; //x position within the element.
+          var y = e.clientY - rect.top;  //y position within the element.
+          setPosition({ x, y });
+          throttleTimeout = null;
+        });
+      }, 100)
+    }
+  }
+
+  useEffect(() => {
+    const scrollContainer = ref.current;
+    scrollContainer.addEventListener("mousemove", onMove);
+
+    return () => {
+      scrollContainer.removeEventListener("mousemove", onMove);
+    };
+  }, []);
+
+  return position;
 };
 
 
@@ -188,6 +220,7 @@ export function BalancedTree({
 }) {
   const ref = useRef(null);
   const [scrollTop] = useScrollAware(ref);
+  const mousePosition = useMousePosition(ref);
   const [multiplier, setMultiplier] = useState(defaultMultiplier);
   const [fontSize, setFontSize] = useState(defaultFontSize);
   const [q, setQ] = useState('');
@@ -198,20 +231,38 @@ export function BalancedTree({
   const [tree, setTree] = useState();
   const [hoveredNode, setHoveredNode] = useState();
   const { onMouseDown } = useDraggableScroll(ref);
+  useHotkeys('1', () => changeFontSize(3),  [scrollTop, hoveredNode, mousePosition]);
+  useHotkeys('2', () => changeFontSize(8),  [scrollTop, hoveredNode, mousePosition]);
+  useHotkeys('3', () => changeFontSize(12), [scrollTop, hoveredNode, mousePosition]);
+  useHotkeys('4', () => changeFontSize(15), [scrollTop, hoveredNode, mousePosition]);
 
-  useEffect(() => {
-    // const contentHeight = Math.floor(fontSize * 1.15 + 2 + fontSize * 2 * 0.25);
+  const getElementHeight = (fontSize) => {
     const border = 2;
     const spacing = 2;
     const contentHeight = fontSize * 1.15;
-    // const contentHeight = Math.floor(fontSize * 1.15);
-    const elementHeight = Math.floor(contentHeight) + border + spacing; //add space around
+    const elementHeight = Math.floor(contentHeight) + border + spacing;
     if (elementHeight < visibleNamesThreshold + border + spacing) {
-      setElementHeight(contentHeight);
+      return contentHeight;
     } else {
-      setElementHeight(elementHeight);
+      return elementHeight;
     }
+  }
+
+  useEffect(() => {
+    const elementHeight = getElementHeight(fontSize);
+    setElementHeight(elementHeight);
   }, [fontSize]);
+
+  const changeFontSize = useCallback((fs) => {
+    const hoverLeaf = hoveredNode ? hoveredNode.firstLeafIndex : undefined;
+    const offset = mousePosition.y;
+    const leafToFocusOn = hoverLeaf ? hoverLeaf : Math.floor((offset + scrollTop) / elementHeight);
+    setFontSize(fs);
+    const newElementHeight = getElementHeight(fs);
+    setTimeout(() => {
+      ref.current.scrollTo({ top: newElementHeight * leafToFocusOn - offset + 50 });
+    }, 200);
+  }, [hoveredNode, scrollTop, mousePosition]);
 
   // perhaps this should be moved to a hook. Since scrolltop updates first, then triggers the effect. This means that the component renders twice.
   useEffect(() => {
@@ -314,13 +365,21 @@ export function BalancedTree({
     {hoveredNode && <div className="gb-snack-bar" dangerouslySetInnerHTML={{ __html: hoveredNode.title || `${hoveredNode.firstLeaf} - ${hoveredNode.lastLeaf}` }}>
     </div>}
     <div className="tree-controls">
-      <Radio.Group value={fontSize} onChange={e => setFontSize(e.target.value)}>
+      <Radio.Group value={fontSize} onChange={e => changeFontSize(e.target.value)}>
         {fittedFontSize < 3 && <Radio.Button value={fittedFontSize}>Fit</Radio.Button>}
         {/* {visibleNode && visibleNode.size > 500 && <Radio.Button value="1">XS</Radio.Button>} */}
-        <Radio.Button value="3">S</Radio.Button>
-        <Radio.Button value="8">M</Radio.Button>
-        <Radio.Button value="12">L</Radio.Button>
-        <Radio.Button value="15">XL</Radio.Button>
+        <Tooltip title="Hotkey 1" mouseLeaveDelay={0}>
+          <Radio.Button value="3">S</Radio.Button>
+        </Tooltip>
+        <Tooltip title="Hotkey 2" mouseLeaveDelay={0}>
+          <Radio.Button value="8">M</Radio.Button>
+        </Tooltip>
+        <Tooltip title="Hotkey 3" mouseLeaveDelay={0}>
+          <Radio.Button value="12">L</Radio.Button>
+        </Tooltip>
+        <Tooltip title="Hotkey 4" mouseLeaveDelay={0}>
+          <Radio.Button value="15">XL</Radio.Button>
+        </Tooltip>
       </Radio.Group>
       {showScale && <label style={{ marginLeft: 12 }}>Horizontal scale
         <input style={{ marginLeft: 12 }} type="range" min={minMultiplier} max={maxMultiplier} value={multiplier} onChange={e => setMultiplier(e.target.value)} />

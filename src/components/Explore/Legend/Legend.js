@@ -26,16 +26,16 @@ const SortableItem = SortableElement(({ value, gotoNode, removeNode, updateVisib
 
   const title = value.title ? value.title : `${value.firstLeaf} - ${value.lastLeaf}`;
   return <li className="gb-tree-legend-item">
-    <DragHandle style={{ display: 'inline-block' }} />
+    <DragHandle />
     <input className="gb-tree-legend-item-color" type="color" onChange={e => setColor(e.target.value)} value={color} />
     <div className="gb-tree-legend-item-action">
-      <Tooltip title="Toggle visibility in map">
+      <Tooltip title="Toggle visibility in map" mouseLeaveDelay={0}>
         {!value.visible && <EyeInvisibleOutlined onClick={e => updateVisiblity({ item: { ...value, visible: true } })} />}
         {value.visible && <EyeOutlined onClick={e => updateVisiblity({ item: { ...value, visible: false } })} />}
       </Tooltip>
     </div>
     <div className="gb-tree-legend-item-action">
-      <Tooltip title="Zoom to node in tree">
+      <Tooltip title="Zoom to node in tree" mouseLeaveDelay={0}>
         <BranchesOutlined onClick={e => gotoNode({ node: value })} />
       </Tooltip>
     </div>
@@ -54,7 +54,7 @@ const SortableList = SortableContainer(({ items, removeNode, gotoNode, updateVis
   );
 });
 
-const DragHandle = sortableHandle(() => <MenuOutlined style={{ color: '#aaa', marginRight: 12 }} />);
+const DragHandle = sortableHandle(() => <MenuOutlined style={{ display: 'inline-block', cursor: 'grab', color: '#aaa', marginRight: 12 }} />);
 
 export default function Legend({ clearSelection, removeNode, layers, gotoNode, updateColor, updateVisiblity, updateOrdering, ...props }) {
   const [items, setItems] = useState([]);
