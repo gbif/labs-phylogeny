@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button, Typography, Card, Alert, Table } from 'antd';
+import React, {useEffect, useState} from 'react';
+import { Button, Typography, Card, Alert, Table, Progress } from 'antd';
 import { withRouter } from 'react-router-dom';
 import async from 'async';
 import axios from 'axios';
@@ -8,6 +8,24 @@ import _ from "lodash"
 // import qs from 'qs';
 
 const NAME_LIST_LIMIT = 20000;
+const getPercent = (num, total) => Math.round((num / total) * 100);
+const MatchProgress = ({ matched, total }) => {
+  const [percent, setPercent] = useState(0);
+  useEffect(() => {
+    setPercent(getPercent(matched, total));
+  });
+
+  return (
+    <Progress
+      strokeColor={{
+        from: "#108ee9",
+        to: "#87d068",
+      }}
+      percent={percent}
+      status="active"
+    />
+  );
+};
 
 class Match extends React.Component {
   render() {
@@ -50,7 +68,7 @@ const columns = [
 class MatchNames extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { names: props.names, loading: true };
+    this.state = { names: props.names, loading: true, progress: 0 };
   }
 
   async componentDidMount() {
@@ -60,6 +78,7 @@ class MatchNames extends React.Component {
 
   lookupName = async (name, callback) => {
     let response = await axios.get(`//api.gbif.org/v1/species/match?verbose=true&name=${name.name.replace(/_/g, ' ')}`);
+    this.setState({progress: this.state.progress + 1})
     name.match = response.data;
     if (name.match.rank === "UNRANKED") {
       let formattedResponse = await axios.get(`//www.gbif.org/api/species/${name.match.usageKey}/name`);
@@ -88,7 +107,7 @@ class MatchNames extends React.Component {
               name.confidence = name.match.confidence;
               if (!name.matchedName) noMatches.push(name);
             });
-            that.setState({ matches: names, noMatches: noMatches, loading: false });
+            that.setState({ matches: names, noMatches: noMatches, loading: false, progress: 0 });
           }
         }
       });
@@ -97,8 +116,10 @@ class MatchNames extends React.Component {
 
   render() {
     const { setMatchedNames } = this.props;
+    const {progress} = this.state;
     return (
       <div>
+        {this.state.loading && <MatchProgress total={this.props.names.length} matched={progress} />}
         <Table columns={columns} dataSource={this.state.matches} loading={this.state.loading} />
         {this.state.noMatches && this.state.noMatches.length > 0 ? <Alert message={`${this.state.noMatches.length} results without a match - no data will be shown for this name`} type="error" /> : undefined}
         <Button type="primary" disabled={this.state.loading} loading={this.state.loading} onClick={() => {

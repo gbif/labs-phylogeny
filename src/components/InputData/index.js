@@ -5,7 +5,7 @@ import parser from 'biojs-io-newick';
 
 import Otl from './OTL'
 import Upload from './Upload'
-
+import TreeGenerator from './TreeGenerator'
 import withContext from "../withContext"
 const { TabPane } = Tabs;
 
