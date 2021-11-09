@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { AutoComplete, Row, Col, Input, Form, Button, message, Transfer, Spin } from "antd";
+import { AutoComplete, Row, Col, Input, Form, Button, Transfer, Spin, Select } from "antd";
 import { withRouter } from "react-router-dom";
 import _ from "lodash";
 import axios from "axios";
 import withContext from "../../withContext";
+const {Option} = Select;
 const BOLD_DATASET_KEY = "040c5662-da76-4782-a48e-cdea1892d14c";
 
 const datasets = [
@@ -149,6 +150,11 @@ const handleSelectChange = (sourceSelectedKeys, targetSelectedKeys) => {
 
   return (
     <React.Fragment>
+    { false && <Row>
+        <Select onChange={(val) => setDataset(val)}>
+          {datasets.map(d => <Option value={d.key}></Option>)}
+        </Select>
+      </Row>}
       <Row>
         <Col span={20}>
       <FormItem {...formItemLayout} help="Find a Taxon in GBIF">
