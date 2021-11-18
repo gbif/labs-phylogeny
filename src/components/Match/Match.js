@@ -7,7 +7,7 @@ import withContext from "../withContext"
 import _ from "lodash"
 // import qs from 'qs';
 
-const NAME_LIST_LIMIT = 20000;
+export const NAME_LIST_LIMIT = 20000;
 const getPercent = (num, total) => Math.round((num / total) * 100);
 const MatchProgress = ({ matched, total }) => {
   const [percent, setPercent] = useState(0);
@@ -31,6 +31,7 @@ class Match extends React.Component {
   render() {
     return (
       <Card title="Match names to GBIF taxonomy" style={{ margin: '20px auto', maxWidth: 1000 }}>
+        {(!this.props.names || !this.props.names[0]) && <p>No names to match. You should start by uploading a tree.</p>}
         <Typography>
           <MatchNames names={this.props.names || []} setMatchedNames={this.props.setMatchedNames} history={this.props.history}></MatchNames>
         </Typography>

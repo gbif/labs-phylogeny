@@ -82,7 +82,7 @@ class Explore extends React.Component {
   constructor(props) {
     super(props);
     const { tree, nodeIdMap, nameMap, node2LeafTaxonKeys } = this.getEnrichedTree();
-    this.state = { taxa: [], selected: {}, tree, nodeIdMap, nameMap, node2LeafTaxonKeys };
+    this.state = { taxa: [], selected: {}, tree, nodeIdMap, nameMap, node2LeafTaxonKeys, error: !tree };
   }
 
   componentDidMount = () => {
@@ -98,14 +98,20 @@ class Explore extends React.Component {
 
   getEnrichedTree = () => {
     // Create a decorated tree with extra properties that are useful when visualizing
-    const nameMap = _.keyBy(this.props.matchedNames, "name");
-    let nodeIdMap = {};
-    let { tree, node2LeafTaxonKeys } = buildTree(nameMap, this.props.rawTree, 0, 0, nodeIdMap);
-    return {
-      tree,
-      nameMap,
-      nodeIdMap,
-      node2LeafTaxonKeys
+    const matchedNames = this.props.matchedNames;
+    const rawTree = this.props.rawTree;
+    if (matchedNames && rawTree) {
+      const nameMap = _.keyBy(this.props.matchedNames, "name");
+      let nodeIdMap = {};
+      let { tree, node2LeafTaxonKeys } = buildTree(nameMap, this.props.rawTree, 0, 0, nodeIdMap);
+      return {
+        tree,
+        nameMap,
+        nodeIdMap,
+        node2LeafTaxonKeys
+      }
+    } else {
+      return {};
     }
   }
 
@@ -177,6 +183,9 @@ class Explore extends React.Component {
     if (this.state.shouldRefresh) {
       this.setState({ shouldRefresh: false });
       shouldRefresh = true;
+    }
+    if (this.state.error) {
+      return <div>No tree loaded, please upload your phylogeny first</div>
     }
     return (
       <SplitPane split="vertical" minSize={200} defaultSize={600} primary="second" style={{ overflow: 'hidden', height: 'calc(100vh - 68px)' }} onDragFinished={this.refreshSizes}>
