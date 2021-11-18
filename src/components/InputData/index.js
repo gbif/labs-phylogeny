@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Tabs, notification } from 'antd';
 import { withRouter } from 'react-router-dom';
 import parser from 'biojs-io-newick';
+import { NAME_LIST_LIMIT } from '../Match/Match';
 
 import Otl from './OTL'
 import Upload from './Upload'
@@ -30,9 +31,17 @@ class InputData extends React.Component {
         // extract names
         let names = [];
         this.extractNames(result, names);
-        setNames(names)
-        this.setState({ names })
-        this.props.history.push('/match')
+        if (names.length > 100) {
+          openNotification({
+            title: 'Too large tree',
+            message: `The tool has a limit on ${NAME_LIST_LIMIT} nodes.`,
+            type: 'error'
+          });
+        } else {
+          setNames(names)
+          this.setState({ names })
+          this.props.history.push('/match')
+        }
       })
       .catch(err => {
         this.setState({ parsing: false })

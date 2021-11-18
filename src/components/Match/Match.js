@@ -7,7 +7,7 @@ import withContext from "../withContext"
 import _ from "lodash"
 // import qs from 'qs';
 
-export const NAME_LIST_LIMIT = 20000;
+export const NAME_LIST_LIMIT = 200;
 const getPercent = (num, total) => Math.round((num / total) * 100);
 const MatchProgress = ({ matched, total }) => {
   const [percent, setPercent] = useState(0);
