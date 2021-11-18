@@ -31,6 +31,7 @@ class Match extends React.Component {
   render() {
     return (
       <Card title="Match names to GBIF taxonomy" style={{ margin: '20px auto', maxWidth: 1000 }}>
+        {(!this.props.names || !this.props.names[0]) && <p>No names to match. You should start by uploading a tree.</p>}
         <Typography>
           <MatchNames names={this.props.names || []} setMatchedNames={this.props.setMatchedNames} history={this.props.history}></MatchNames>
         </Typography>
