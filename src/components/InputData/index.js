@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card,Tabs } from 'antd';
+import { Card, Tabs, notification } from 'antd';
 import { withRouter } from 'react-router-dom';
 import parser from 'biojs-io-newick';
 
@@ -9,57 +9,71 @@ import Upload from './Upload'
 import withContext from "../withContext"
 const { TabPane } = Tabs;
 
+const openNotification = ({ title, type = 'open', message }) => {
+  notification[type]({
+    message: title,
+    description: message,
+    onClick: () => {
+      console.log('Notification Clicked!');
+    },
+  });
+};
+
 class InputData extends React.Component {
-    startParsing = () => {
-        const { setRawTree, setNames, newick } = this.props;
-        this.setState({ parsing: true });
-        this.parse(newick)
-          .then(result => {
-            setRawTree(result)
-            this.setState({ parsing: false });
-            // extract names
-            let names = [];
-            this.extractNames(result, names);
-            setNames(names)
-            this.setState({ names })
-            this.props.history.push('/match')
-          })
-          .catch(err => this.setState({ parsing: false }))
-      }
-    
-      extractNames = (o, names) => {
-        if (o.name) names.push(o.name);
-        if (o.children) {
-          o.children.forEach(child => this.extractNames(child, names));
-        }
-      }
-    
-      parse = async value => {
-        return parser.parse_newick(value);
-      }
+  startParsing = () => {
+    const { setRawTree, setNames, newick } = this.props;
+    this.setState({ parsing: true });
+    this.parse(newick)
+      .then(result => {
+        setRawTree(result)
+        this.setState({ parsing: false });
+        // extract names
+        let names = [];
+        this.extractNames(result, names);
+        setNames(names)
+        this.setState({ names })
+        this.props.history.push('/match')
+      })
+      .catch(err => {
+        this.setState({ parsing: false })
+        openNotification({
+          title: 'Failed to parse input',
+          message: 'You newick text is most likely invalid',
+          type: 'error'
+        });
+      });
+  }
+
+  extractNames = (o, names) => {
+    if (o.name) names.push(o.name);
+    if (o.children) {
+      o.children.forEach(child => this.extractNames(child, names));
+    }
+  }
+
+  parse = async value => {
+    return parser.parse_newick(value);
+  }
 
   render() {
 
     return (
-        <Card title="NEWICK tree" style={{ margin: '20px auto', width: 800 }}>
+      <Card title="NEWICK tree" style={{ margin: '20px auto', width: 800 }}>
 
-           <Tabs defaultActiveKey="1"  size="small">
+        <Tabs defaultActiveKey="1" size="small">
           <TabPane tab="Input Newick" key="1">
             <Upload startParsing={this.startParsing} />
-            
           </TabPane>
           <TabPane tab="Fetch from OToL" key="2">
-
-          <Otl startParsing={this.startParsing}/>
-
+            <Otl startParsing={this.startParsing} />
           </TabPane>
-{/*           <TabPane tab="Generate tree" key="3">
+          {/*           <TabPane tab="Generate tree" key="3">
             <TreeGenerator startParsing={this.startParsing} />
           </TabPane> */}
         </Tabs>
-        </Card>
-        
-      
+      </Card>
+
+
     )
   }
 }
