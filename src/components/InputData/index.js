@@ -31,10 +31,10 @@ class InputData extends React.Component {
         // extract names
         let names = [];
         this.extractNames(result, names);
-        if (names.length > 100) {
+        if (names.length > NAME_LIST_LIMIT) {
           openNotification({
             title: 'Too large tree',
-            message: `The tool has a limit on ${NAME_LIST_LIMIT} nodes.`,
+            message: `The tool has a limit on ${NAME_LIST_LIMIT} nodes. The uploaded tree has ${names.length}.`,
             type: 'error'
           });
         } else {
