@@ -272,7 +272,11 @@ function buildTree(nameMap, node, parentKey, index, nodeIdMap) {
     return n;
   }
 
-  let tree = recursive(nameMap, node, parentKey, index, nodeIdMap);
+  try {
+    let tree = recursive(nameMap, node, parentKey, index, nodeIdMap);
 
-  return { tree, node2LeafTaxonKeys };
+    return { tree, node2LeafTaxonKeys };
+  } catch(err) {
+    return {};
+  };
 }
