@@ -6,7 +6,7 @@ import { NAME_LIST_LIMIT } from '../Match/Match';
 
 import Otl from './OTL'
 import Upload from './Upload'
-// import TreeGenerator from './TreeGenerator'
+//import TreeGenerator from './TreeGenerator'
 import withContext from "../withContext"
 const { TabPane } = Tabs;
 
@@ -78,7 +78,7 @@ class InputData extends React.Component {
           </TabPane>
           {/*           <TabPane tab="Generate tree" key="3">
             <TreeGenerator startParsing={this.startParsing} />
-          </TabPane> */}
+    </TabPane> */}
         </Tabs>
       </Card>
 
