@@ -1,7 +1,8 @@
 import React from 'react';
 import { Card, Tabs, notification } from 'antd';
 import { withRouter } from 'react-router-dom';
-import parser from 'biojs-io-newick';
+// import parser from 'biojs-io-newick';
+import parser from './parser';
 import { NAME_LIST_LIMIT } from '../Match/Match';
 
 import Otl from './OTL'
@@ -61,7 +62,8 @@ class InputData extends React.Component {
   }
 
   parse = async value => {
-    return parser.parse_newick(value);
+    // return parser.parse_newick(value);
+    return parser(value);
   }
 
   render() {
