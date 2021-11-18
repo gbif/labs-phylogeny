@@ -81,7 +81,7 @@ class MatchNames extends React.Component {
     this.setState({progress: this.state.progress + 1})
     name.match = response.data;
     if (name.match.rank === "UNRANKED") {
-      let formattedResponse = await axios.get(`//www.gbif.org/api/species/${name.match.usageKey}/name`);
+      let formattedResponse = await axios.get(`https://www.gbif.org/api/species/${name.match.usageKey}/name`);
       name.match.formattedName = _.get(formattedResponse, "data.n");
     }
     callback();

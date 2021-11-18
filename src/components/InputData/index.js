@@ -5,7 +5,7 @@ import parser from 'biojs-io-newick';
 
 import Otl from './OTL'
 import Upload from './Upload'
-// import TreeGenerator from './TreeGenerator'
+import TreeGenerator from './TreeGenerator'
 import withContext from "../withContext"
 const { TabPane } = Tabs;
 
@@ -53,9 +53,9 @@ class InputData extends React.Component {
           <Otl startParsing={this.startParsing}/>
 
           </TabPane>
-{/*           <TabPane tab="Generate tree" key="3">
+          <TabPane tab="Generate tree" key="3">
             <TreeGenerator startParsing={this.startParsing} />
-          </TabPane> */}
+          </TabPane>
         </Tabs>
         </Card>
         

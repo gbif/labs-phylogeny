@@ -77,7 +77,7 @@ class Otl extends React.Component {
       const treeResponse = await axios.get(
         `//www.gbif.org/api/otl/newick?node_id=${node_id}`
       );
-      this.props.setTree(_.get(treeResponse, "data.newick"));
+      this.props.setNewick(_.get(treeResponse, "data.newick"));
       this.setState({ loading: false });
     } catch (err) {
       this.setState({ loading: false });
@@ -123,7 +123,7 @@ class Otl extends React.Component {
               <Button
                 type="link"
                 onClick={() =>
-                  this.setState({ node_id: "mrcaott30642ott447374" })
+                  this.setState({ node_id: "mrcaott30642ott447374" }, () => this.getTreeFromOtl("mrcaott30642ott447374"))
                 }
               >
                 mrcaott30642ott447374
@@ -132,7 +132,7 @@ class Otl extends React.Component {
               <Button
                 type="link"
                 onClick={() =>
-                  this.setState({ node_id: "ott852221" })
+                  this.setState({ node_id: "ott852221" }, () => this.getTreeFromOtl("ott852221"))
                 }
               >
                 ott852221
