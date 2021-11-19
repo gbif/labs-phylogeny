@@ -75,7 +75,7 @@ class InputData extends React.Component {
           <TabPane tab="Input Newick" key="1">
             <Upload startParsing={this.startParsing} />
           </TabPane>
-          <TabPane tab="Fetch from OToL" key="2">
+          <TabPane tab={<><img alt="OTL logo" style={{height: "16px"}} src="/mini-opentree-logo.png" /> <span>Fetch from Open Tree of Life</span></>} key="2">
             <Otl startParsing={this.startParsing} />
           </TabPane>
           {/*           <TabPane tab="Generate tree" key="3">
