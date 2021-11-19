@@ -168,7 +168,9 @@ class Otl extends React.Component {
           <Row>
             <Col flex="auto"></Col>
             <Col>
-              <h3>Or enter a Node ID:</h3>
+              <h3>Or enter a Node ID <InfoCircleOutlined
+              onClick={() => this.setState({ showHelp: true })}
+            /> directly :</h3>
             </Col>
             <Col flex="auto"></Col>
           </Row>
@@ -203,16 +205,12 @@ class Otl extends React.Component {
             <Input.Search
               loading={loading}
               placeholder="Enter a OTL node_id like mrcaott30642ott447374"
-              style={{ width: "95%" }}
               value={node_id}
               onChange={(e) => {
                 this.setState({ node_id: e.currentTarget.value });
               }}
               onSearch={this.getTreeFromOtl}
               allowClear
-            />{" "}
-            <InfoCircleOutlined
-              onClick={() => this.setState({ showHelp: true })}
             />
           </FormItem>
           <FormItem>
