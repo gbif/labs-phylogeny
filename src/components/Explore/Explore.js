@@ -98,8 +98,9 @@ class Explore extends React.Component {
 
   getEnrichedTree = () => {
     // Create a decorated tree with extra properties that are useful when visualizing
-    const matchedNames = this.props.matchedNames;
-    const rawTree = this.props.rawTree;
+    const matchedNames = this.props.matchedNames; // injected via from context
+    const rawTree = this.props.rawTree; // injected via from context
+          
     if (matchedNames && rawTree) {
       const nameMap = _.keyBy(this.props.matchedNames, "name");
       let nodeIdMap = {};
@@ -188,7 +189,7 @@ class Explore extends React.Component {
       return <div>No tree loaded, please upload your phylogeny first</div>
     }
     return (
-      <SplitPane split="vertical" minSize={200} defaultSize={600} primary="second" style={{ overflow: 'hidden', height: 'calc(100vh - 68px)' }} onDragFinished={this.refreshSizes}>
+      <SplitPane split="vertical" minSize={200} defaultSize={600} primary="second" style={{ overflow: 'hidden', height: this.props.hideNavigation ? '100vh' : 'calc(100vh - 68px)' }} onDragFinished={this.refreshSizes}>
         <div className="treeCard">
           <PhylogenyTree focusedNode={this.state.focusedNode} nodeIdMap={this.state.nodeIdMap} tree={this.state.tree} onToggle={this.onToggle} onSelect={this.onSelect} highlighted={this.state.selected}></PhylogenyTree>
         </div>
@@ -202,17 +203,9 @@ class Explore extends React.Component {
 }
 
 const mapContextToProps = ({
-  setNewick,
-  setRawTree,
-  setNames,
-  setMatchedNames,
   rawTree,
   matchedNames,
 }) => ({
-  setNewick,
-  setRawTree,
-  setNames,
-  setMatchedNames,
   rawTree,
   matchedNames,
 });

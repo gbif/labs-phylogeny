@@ -9,6 +9,7 @@ class ContextProvider extends React.Component {
       rawTree: this.getJSONFromStorage('rawTree'),
       names: this.getJSONFromStorage('names'),
       matchedNames: this.getJSONFromStorage('matchedNames'),
+      mapKey: 'pk.eyJ1IjoiaG9mZnQiLCJhIjoiY2llaGNtaGRiMDAxeHNxbThnNDV6MG95OSJ9.p6Dj5S7iN-Mmxic6Z03BEA',
       setNewick: (newick) => {
         this.setState({ newick });
         try {
@@ -40,6 +41,12 @@ class ContextProvider extends React.Component {
         } catch(e) {
           //ignore errors
         }
+      },
+      setMapKey: (mapKey) => {
+        this.setState({ mapKey });
+      },
+      setSearchTemplate: (searchTemplate) => {
+        this.setState({ searchTemplate });
       }
     };
   }
@@ -65,5 +72,29 @@ class ContextProvider extends React.Component {
     );
   }
 }
+
+window.getJSONFromStorage = function(name) {
+  const nameStr = localStorage.getItem(name);
+  try {
+    const parsed = nameStr ? JSON.parse(nameStr) : null
+    return parsed;
+  } catch (err) {
+    console.error('invalid or empty JSON loaded from storage');
+    return null;
+  }
+}
+
+window.gbifGetExplorerState = () => {
+  const state = {
+    hideNavigation: true,
+    // newick: localStorage.getItem('newick'),
+    rawTree: window.getJSONFromStorage('rawTree'),
+    // names: window.getJSONFromStorage('names'),
+    matchedNames: window.getJSONFromStorage('matchedNames'),
+  }
+  return state;
+}
+console.info('To get the state of the app in the console, run window.gbifGetExplorerState()');
+
 
 export default ContextProvider;

@@ -2,10 +2,11 @@ import React, { useState, useCallback, useEffect } from "react";
 import { SortableContainer, SortableElement, sortableHandle } from 'react-sortable-hoc';
 import { arrayMoveImmutable as arrayMove } from 'array-move';
 import './legend.css';
-import { MenuOutlined, BranchesOutlined, DeleteOutlined, EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
-import { Tooltip } from 'antd';
+import { MenuOutlined, BranchesOutlined, DeleteOutlined, EyeInvisibleOutlined, EyeOutlined, FilterOutlined as SearchIcon } from '@ant-design/icons';
+import { Button, Tooltip } from 'antd';
+import withContext from "../../withContext";
 
-const SortableItem = SortableElement(({ value, gotoNode, removeNode, updateVisiblity, updateColor }) => {
+const SortableItem = SortableElement(({ value, gotoNode, removeNode, updateVisiblity, updateColor, searchTemplate }) => {
   const [color, setColor] = useState(value.color);
   
   useEffect(() => {
@@ -25,6 +26,13 @@ const SortableItem = SortableElement(({ value, gotoNode, removeNode, updateVisib
   );
 
   const title = value.title ? value.title : `${value.firstLeaf} - ${value.lastLeaf}`;
+  
+  const query = value.taxonKeys.map(x => `taxonKey=${x}`).join('&');
+  let queryUrl;
+  if (searchTemplate){
+    queryUrl = searchTemplate.replace().replace('{query}', query);
+  }
+
   return <li className="gb-tree-legend-item">
     <DragHandle />
     <input className="gb-tree-legend-item-color" type="color" onChange={e => setColor(e.target.value)} value={color} />
@@ -39,16 +47,21 @@ const SortableItem = SortableElement(({ value, gotoNode, removeNode, updateVisib
         <BranchesOutlined onClick={e => gotoNode({ node: value })} />
       </Tooltip>
     </div>
+    {queryUrl && <div className="gb-tree-legend-item-action">
+      <Tooltip title="Explore occurrences" mouseLeaveDelay={0}>
+        <a target="_blank" href={queryUrl} style={{color: 'inherit'}}><SearchIcon /></a>
+      </Tooltip>
+    </div>}
     <div dangerouslySetInnerHTML={{ __html: title }} style={{ flex: '1 1 auto', color: value.visible ? null : '#aaa' }}></div>
     <DeleteOutlined onClick={e => removeNode({ node: value })} />
   </li>
 });
 
-const SortableList = SortableContainer(({ items, removeNode, gotoNode, updateVisiblity, updateColor }) => {
+const SortableList = SortableContainer(({ items, removeNode, gotoNode, updateVisiblity, updateColor, searchTemplate }) => {
   return (
     <ul>
       {items.map((value, index) => (
-        <SortableItem key={`item-${value.key}`} index={index} value={value} updateVisiblity={updateVisiblity} gotoNode={gotoNode} updateColor={updateColor} removeNode={removeNode} />
+        <SortableItem key={`item-${value.key}`} index={index} value={value} updateVisiblity={updateVisiblity} gotoNode={gotoNode} updateColor={updateColor} removeNode={removeNode} searchTemplate={searchTemplate}/>
       ))}
     </ul>
   );
@@ -56,7 +69,7 @@ const SortableList = SortableContainer(({ items, removeNode, gotoNode, updateVis
 
 const DragHandle = sortableHandle(() => <MenuOutlined style={{ display: 'inline-block', cursor: 'grab', color: '#aaa', marginRight: 12 }} />);
 
-export default function Legend({ clearSelection, removeNode, layers, gotoNode, updateColor, updateVisiblity, updateOrdering, ...props }) {
+function Legend({ clearSelection, removeNode, layers, gotoNode, updateColor, updateVisiblity, updateOrdering, searchTemplate, ...props }) {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
@@ -91,10 +104,18 @@ export default function Legend({ clearSelection, removeNode, layers, gotoNode, u
       <div><DeleteOutlined onClick={e => clearSelection()} /></div>
     </div>
     <div className="legendList">
-      <SortableList removeNode={removeNode} updateVisiblity={updateVisiblity} updateColor={updateColor} gotoNode={gotoNode} items={items} onSortEnd={props => onSortEnd({ ...props, items })} useDragHandle />
+      <SortableList removeNode={removeNode} updateVisiblity={updateVisiblity} updateColor={updateColor} gotoNode={gotoNode} items={items} onSortEnd={props => onSortEnd({ ...props, items })} searchTemplate={searchTemplate} useDragHandle />
       {items.length === 0 && <div style={{ textAlign: 'center', color: '#aaa', margin: 12 }}>
         Select a node in the tree to get started
       </div>}
     </div>
   </div>
 }
+
+const mapContextToProps = ({
+  searchTemplate,
+}) => ({
+  searchTemplate,
+});
+
+export default withContext(mapContextToProps)(Legend);

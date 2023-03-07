@@ -4,10 +4,7 @@ import Color from 'color';
 import './map.css';
 import { Menu, Dropdown, Button } from 'antd';
 import {DownOutlined} from "@ant-design/icons"
-
-
-mapboxgl.accessToken =
-  "pk.eyJ1IjoiaG9mZnQiLCJhIjoiY2llaGNtaGRiMDAxeHNxbThnNDV6MG95OSJ9.p6Dj5S7iN-Mmxic6Z03BEA";
+import withContext from "../withContext";
 
 class Map extends Component {
   constructor(props) {
@@ -29,6 +26,7 @@ class Map extends Component {
         </Menu.Item>
       </Menu>
     );
+    mapboxgl.accessToken = props.mapKey;
     this.state = { selected: props.selected || {}, menu, baseLayer: 'light-v10' };
   }
 
@@ -169,4 +167,10 @@ class Map extends Component {
   }
 }
 
-export default Map;
+const mapContextToProps = ({
+  mapKey,
+}) => ({
+  mapKey,
+});
+
+export default withContext(mapContextToProps)(Map);

@@ -339,7 +339,7 @@ export function BalancedTree({
   return <div className="treeArea" style={{ display: 'flex', flexDirection: 'column' }}>
     <div className="tree-controls">
       <AutoComplete
-        style={{ width: 400 }}
+        style={{ width: 400, maxWidth: '100%' }}
         value={q}
         onChange={q => {
           if (!q) {
@@ -365,7 +365,7 @@ export function BalancedTree({
     {hoveredNode && <div className="gb-snack-bar" dangerouslySetInnerHTML={{ __html: hoveredNode.title || `${hoveredNode.firstLeaf} - ${hoveredNode.lastLeaf}` }}>
     </div>}
     <div className="tree-controls">
-      <Radio.Group value={fontSize} onChange={e => changeFontSize(e.target.value)}>
+      <Radio.Group value={fontSize} onChange={e => changeFontSize(e.target.value)} style={{marginRight: 12}}>
         {fittedFontSize < 3 && <Radio.Button value={fittedFontSize}>Fit</Radio.Button>}
         {/* {visibleNode && visibleNode.size > 500 && <Radio.Button value="1">XS</Radio.Button>} */}
         <Tooltip title="Hotkey 1" mouseLeaveDelay={0}>
@@ -381,7 +381,7 @@ export function BalancedTree({
           <Radio.Button value="15">XL</Radio.Button>
         </Tooltip>
       </Radio.Group>
-      {showScale && <label style={{ marginLeft: 12 }}>Horizontal scale
+      {showScale && <label style={{ margin: '8px 8px 8px 0', display: 'inline-block' }}>Horizontal scale
         <input style={{ marginLeft: 12 }} type="range" min={minMultiplier} max={maxMultiplier} value={multiplier} onChange={e => setMultiplier(e.target.value)} />
       </label>}
     </div>
