@@ -3,7 +3,7 @@ export const AppContext = React.createContext({});
 
 let hasLocalStorage = false;
 try {
-  hasLocalStorage = window?.localStorage !== 'undefined';
+  hasLocalStorage = window.localStorage !== 'undefined';
 } catch (e) {
   hasLocalStorage = false;
 }
