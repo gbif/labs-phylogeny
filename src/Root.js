@@ -1,5 +1,5 @@
 import React from 'react';
-import { Steps, Button, Spin } from 'antd';
+import { Steps, Button, Spin, Result } from 'antd';
 import { withRouter, Route, Switch, Link } from 'react-router-dom';
 
 import About from './components/About';
@@ -42,6 +42,10 @@ class Root extends React.Component {
 
           this.setState({ loading: false, hideNavigation: initialState.hideNavigation });
         })
+        .catch(error => {
+          console.log(error);
+          this.setState({ loading: false, error: true });
+        });
     } else {
       this.setState({ loading: false });
     }
@@ -66,10 +70,17 @@ class Root extends React.Component {
 
   render() {
     let step = this.getCurrentStep();
-    const { loading, hideNavigation } = this.state;
+    const { error, loading, hideNavigation } = this.state;
+    if (error) {
+      return <Result
+        status="500"
+        title="500"
+        subTitle={<div>Sorry, something went wrong. Please leave an issue on <a target="_blank" rel="noopener noreferrer" href="https://github.com/gbif/labs-phylogeny/issues/new">github</a>.</div>}
+      />
+    }
     return (
       <React.Fragment>
-        {loading && <div style={{textAlign: 'center', paddingTop: 100}}><Spin size="large" spinning={loading}></Spin></div>}
+        {loading && <div style={{ textAlign: 'center', paddingTop: 100 }}><Spin size="large" spinning={loading}></Spin></div>}
         {!loading && <>
           {!hideNavigation && <div style={{ display: 'flex', background: 'white', padding: 20, borderBottom: '1px solid #eee' }}>
             <Button type={step === -1 ? 'primary' : ''} style={{ flex: '0 0 auto', margin: '-5px 20px 0 0' }}>
