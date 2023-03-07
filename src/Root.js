@@ -69,7 +69,7 @@ class Root extends React.Component {
     const { loading, hideNavigation } = this.state;
     return (
       <React.Fragment>
-        {loading && <Spin size="large" spinning={loading}></Spin>}
+        {loading && <div style={{textAlign: 'center', paddingTop: 100}}><Spin size="large" spinning={loading}></Spin></div>}
         {!loading && <>
           {!hideNavigation && <div style={{ display: 'flex', background: 'white', padding: 20, borderBottom: '1px solid #eee' }}>
             <Button type={step === -1 ? 'primary' : ''} style={{ flex: '0 0 auto', margin: '-5px 20px 0 0' }}>
