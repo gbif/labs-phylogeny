@@ -48,7 +48,11 @@ class Map extends Component {
     });
     this.map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-left');
     this.map.on("load", x => this.addLayers(this.props.selected));
-    this.map.on("style.load", x => this.updateLayers(this.props.selected, this.props.selected));
+    this.map.on("style.load", x => {
+      this.map.setCenter([0, 0]);
+      this.map.setZoom(0);
+      this.updateLayers(this.props.selected, this.props.selected);
+    });
   }
 
   componentWillUnmount() {
