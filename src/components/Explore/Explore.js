@@ -189,7 +189,7 @@ class Explore extends React.Component {
       return <div>No tree loaded, please upload your phylogeny first</div>
     }
     return (
-      <SplitPane split="vertical" minSize={200} defaultSize={600} primary="second" style={{ overflow: 'hidden', height: this.props.hideNavigation ? '100vh' : 'calc(100vh - 68px)' }} onDragFinished={this.refreshSizes}>
+      <SplitPane split="vertical" minSize={200} defaultSize="50%" primary="second" style={{ overflow: 'hidden', height: this.props.hideNavigation ? '100vh' : 'calc(100vh - 68px)' }} onDragFinished={this.refreshSizes}>
         <div className="treeCard">
           <PhylogenyTree focusedNode={this.state.focusedNode} nodeIdMap={this.state.nodeIdMap} tree={this.state.tree} onToggle={this.onToggle} onSelect={this.onSelect} highlighted={this.state.selected}></PhylogenyTree>
         </div>
