@@ -20,7 +20,9 @@ class Root extends React.Component {
   componentDidMount = () => {
     const { setRawTree, setMapKey, setMatchedNames, setSearchTemplate } = this.props;
     // get the url pointing to the state (if existing)
-    const stateUrl = new URLSearchParams(window.location.search).get('explore');
+    const params = new URLSearchParams(window.location.search);
+    const stateUrl = params.get('explore');
+    const urlSearchTemplate = params.get('template');
     // if state exists then load from url
     if (stateUrl) {
       fetch(stateUrl)
@@ -33,8 +35,9 @@ class Root extends React.Component {
           if (initialState.mapKey) {
             setMapKey(initialState.mapKey);
           }
-          if (initialState.searchTemplate) {
-            setSearchTemplate(initialState.searchTemplate);
+          const searchTemplate = urlSearchTemplate || initialState.template;
+          if (searchTemplate) {
+            setSearchTemplate(searchTemplate);
           }
 
           this.setState({ loading: false, hideNavigation: initialState.hideNavigation });
