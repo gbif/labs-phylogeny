@@ -3,7 +3,7 @@ import { SortableContainer, SortableElement, sortableHandle } from 'react-sortab
 import { arrayMoveImmutable as arrayMove } from 'array-move';
 import './legend.css';
 import { MenuOutlined, BranchesOutlined, DeleteOutlined, EyeInvisibleOutlined, EyeOutlined, FilterOutlined as SearchIcon } from '@ant-design/icons';
-import { Button, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import withContext from "../../withContext";
 
 const SortableItem = SortableElement(({ value, gotoNode, removeNode, updateVisiblity, updateColor, searchTemplate }) => {
@@ -49,7 +49,7 @@ const SortableItem = SortableElement(({ value, gotoNode, removeNode, updateVisib
     </div>
     {queryUrl && <div className="gb-tree-legend-item-action">
       <Tooltip title="Explore occurrences" mouseLeaveDelay={0}>
-        <a target="_blank" href={queryUrl} style={{color: 'inherit'}}><SearchIcon /></a>
+        <a target="_blank" rel="noopener noreferrer" href={queryUrl} style={{color: 'inherit'}}><SearchIcon /></a>
       </Tooltip>
     </div>}
     <div dangerouslySetInnerHTML={{ __html: title }} style={{ flex: '1 1 auto', color: value.visible ? null : '#aaa' }}></div>
