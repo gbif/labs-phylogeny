@@ -1,7 +1,12 @@
 import React from "react";
 export const AppContext = React.createContext({});
 
-const hasLocalStorage = window.localStorage !== 'undefined';
+let hasLocalStorage = false;
+try {
+  hasLocalStorage = window?.localStorage !== 'undefined';
+} catch (e) {
+  hasLocalStorage = false;
+}
 
 class ContextProvider extends React.Component {
   constructor(props) {
