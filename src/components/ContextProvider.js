@@ -1,14 +1,22 @@
 import React from "react";
 export const AppContext = React.createContext({});
 
+const hasLocalStorage = window.localStorage !== 'undefined';
+
 class ContextProvider extends React.Component {
   constructor(props) {
     super(props);
+    let storedState = {};
+    if (hasLocalStorage) {
+      storedState = {
+        newick: localStorage.getItem('newick') || null,
+        rawTree: this.getJSONFromStorage('rawTree'),
+        names: this.getJSONFromStorage('names'),
+        matchedNames: this.getJSONFromStorage('matchedNames'),
+      }
+    }
     this.state = {
-      newick: localStorage.getItem('newick') || null,
-      rawTree: this.getJSONFromStorage('rawTree'),
-      names: this.getJSONFromStorage('names'),
-      matchedNames: this.getJSONFromStorage('matchedNames'),
+      ...storedState,
       mapKey: 'pk.eyJ1IjoiaG9mZnQiLCJhIjoiY2llaGNtaGRiMDAxeHNxbThnNDV6MG95OSJ9.p6Dj5S7iN-Mmxic6Z03BEA',
       setNewick: (newick) => {
         this.setState({ newick });
@@ -21,7 +29,7 @@ class ContextProvider extends React.Component {
       setRawTree: (rawTree) => {
         this.setState({ rawTree });
         try {
-          localStorage.setItem('rawTree', JSON.stringify(rawTree));
+          if (hasLocalStorage) localStorage.setItem('rawTree', JSON.stringify(rawTree));
         } catch(e) {
           //ignore errors
         }
@@ -29,7 +37,7 @@ class ContextProvider extends React.Component {
       setNames: (names) => {
         this.setState({ names });
         try {
-          localStorage.setItem('names', JSON.stringify(names));
+          if (hasLocalStorage) localStorage.setItem('names', JSON.stringify(names));
         } catch(e) {
           //ignore errors
         }
@@ -37,7 +45,7 @@ class ContextProvider extends React.Component {
       setMatchedNames: (matchedNames) => {
         this.setState({ matchedNames });
         try {
-          localStorage.setItem('matchedNames', JSON.stringify(matchedNames));
+          if (hasLocalStorage) localStorage.setItem('matchedNames', JSON.stringify(matchedNames));
         } catch(e) {
           //ignore errors
         }
