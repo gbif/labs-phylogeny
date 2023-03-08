@@ -92,6 +92,9 @@ class MatchNames extends React.Component {
     if (nameList.length > NAME_LIST_LIMIT) {
       alert(`There is more than ${NAME_LIST_LIMIT} terminal nodes in the tree. Please use a smaller tree. `)
     } else {
+      if (nameList.length > 15000) {
+        alert(`Your tree is very large and performance might be slow.`)
+      }
       let names = nameList.map(n => ({ name: n }));
       let that = this;
       async.eachLimit(names, 10, this.lookupName, function (err) {
