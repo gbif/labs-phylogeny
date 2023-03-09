@@ -17,6 +17,7 @@ const mapContextToProps = ({
   setMatchedNames,
   rawTree,
   matchedNames,
+  defaultMultiplier,
 }) => ({
   setNewick,
   setRawTree,
@@ -24,6 +25,7 @@ const mapContextToProps = ({
   setMatchedNames,
   rawTree,
   matchedNames,
+  defaultMultiplier,
 });
 
 export default withRouter(withContext(mapContextToProps)(TreeWrapper));

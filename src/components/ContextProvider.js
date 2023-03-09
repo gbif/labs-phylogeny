@@ -58,6 +58,9 @@ class ContextProvider extends React.Component {
       setMapKey: (mapKey) => {
         this.setState({ mapKey });
       },
+      setDefaultMultiplier: (defaultMultiplier) => {
+        this.setState({ defaultMultiplier });
+      },
       setSearchTemplate: (searchTemplate) => {
         this.setState({ searchTemplate });
       }

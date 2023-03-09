@@ -9,7 +9,6 @@ import { useHotkeys } from 'react-hotkeys-hook';
 const Option = AutoComplete.Option;
 
 const defaultFontSize = 12;
-const defaultMultiplier = 1000;
 const visibleNamesThreshold = 10;
 
 // Generic hook for detecting scroll:
@@ -216,6 +215,7 @@ export function BalancedTree({
   focusedNode,
   tree: treeData = acacia,
   nodeIdMap,
+  defaultMultiplier = 1000,
   ...props
 }) {
   const ref = useRef(null);
@@ -382,7 +382,10 @@ export function BalancedTree({
         </Tooltip>
       </Radio.Group>
       {showScale && <label style={{ margin: '8px 8px 8px 0', display: 'inline-block' }}>Horizontal scale
-        <input style={{ marginLeft: 12 }} type="range" min={minMultiplier} max={maxMultiplier} value={multiplier} onChange={e => setMultiplier(e.target.value)} />
+        <input style={{ marginLeft: 12 }} type="range" min={minMultiplier} max={maxMultiplier} value={multiplier} onChange={e => {
+          setMultiplier(e.target.value);
+          console.log(`Multiplier: ${e.target.value}`);
+          }} />
       </label>}
     </div>
     <StyledTree

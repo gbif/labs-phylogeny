@@ -18,7 +18,7 @@ class Root extends React.Component {
   }
 
   componentDidMount = () => {
-    const { setRawTree, setMapKey, setMatchedNames, setSearchTemplate } = this.props;
+    const { setRawTree, setMapKey, setDefaultMultiplier, setMatchedNames, setSearchTemplate } = this.props;
     // get the url pointing to the state (if existing)
     const params = new URLSearchParams(window.location.search);
     const stateUrl = params.get('explore');
@@ -34,6 +34,9 @@ class Root extends React.Component {
           setMatchedNames(initialState.matchedNames);
           if (initialState.mapKey) {
             setMapKey(initialState.mapKey);
+          }
+          if (initialState.defaultMultiplier) {
+            setDefaultMultiplier(initialState.defaultMultiplier);
           }
           const searchTemplate = urlSearchTemplate || initialState.template;
           if (searchTemplate) {
@@ -117,6 +120,7 @@ const mapContextToProps = ({
   setNames,
   setMatchedNames,
   setMapKey,
+  setDefaultMultiplier,
   setSearchTemplate
 }) => ({
   setNewick,
@@ -124,6 +128,7 @@ const mapContextToProps = ({
   setNames,
   setMatchedNames,
   setMapKey,
+  setDefaultMultiplier,
   setSearchTemplate
 });
 
