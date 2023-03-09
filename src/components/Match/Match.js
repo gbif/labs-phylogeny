@@ -129,7 +129,7 @@ class MatchNames extends React.Component {
 
   render() {
     const { setMatchedNames } = this.props;
-    const { progress, errors } = this.state;
+    const { progress } = this.state;
     return (
       <div>
         {this.state.loading && <MatchProgress total={this.props.names.length} matched={progress} />}
