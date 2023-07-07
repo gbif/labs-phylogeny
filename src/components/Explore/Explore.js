@@ -186,6 +186,7 @@ class Explore extends React.Component {
       shouldRefresh = true;
     }
     if (this.state.error) {
+      console.error(this.state);
       return <div>No tree loaded, please upload your phylogeny first</div>
     }
     return (
@@ -223,8 +224,9 @@ function buildTree(nameMap, node, parentKey, index, nodeIdMap) {
 
   function recursive(nameMap, node, parentKey, index, nodeIdMap) {
     const children = node.children || [];
+    const hasMatch = nameMap[node.name] && nameMap[node.name].match;
     let n = {
-      title: node.name ? nameMap[node.name].matchedName : node.name,
+      title: hasMatch ? nameMap[node.name].matchedName : node.name,
       key: `${parentKey}-${index}`,
       branch_length: node.branch_length || 0.001,
       name: node.name,
@@ -237,7 +239,7 @@ function buildTree(nameMap, node, parentKey, index, nodeIdMap) {
     };
     nodeIndex++;
     nodeIdMap[n.key] = n;
-    if (node.name) n.taxonKey = nameMap[node.name].match.usageKey;
+    if (hasMatch) n.taxonKey = nameMap[node.name].match.usageKey;
     if (children.length === 0) {
       n.leafIndex = leafIndex;
       leafIndex++;
@@ -270,6 +272,7 @@ function buildTree(nameMap, node, parentKey, index, nodeIdMap) {
 
     return { tree, node2LeafTaxonKeys };
   } catch(err) {
+    console.error(err);
     return {};
   };
 }
