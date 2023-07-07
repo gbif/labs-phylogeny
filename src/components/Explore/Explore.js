@@ -226,12 +226,12 @@ function buildTree(nameMap, node, parentKey, index, nodeIdMap) {
     let n = {
       title: node.name ? nameMap[node.name].matchedName : node.name,
       key: `${parentKey}-${index}`,
-      branch_length: node.branch_length,
+      branch_length: node.branch_length || 0,
       name: node.name,
       nodeIndex: nodeIndex,
       other: {
         originalNodeName: node.name,
-        branch_length: node.branch_length,
+        branch_length: node.branch_length || 0,
         ...nameMap[node.name],
       },
     };
