@@ -51,7 +51,9 @@ class ContextProvider extends React.Component {
         this.setState({ matchedNames });
         try {
           if (hasLocalStorage) localStorage.setItem('matchedNames', JSON.stringify(matchedNames));
+          console.log('no error')
         } catch(e) {
+          console.log(e)
           //ignore errors
         }
       },
@@ -65,7 +67,28 @@ class ContextProvider extends React.Component {
         this.setState({ searchTemplate });
       }
     };
+    window.getJSONFromStorage = function(name) {
+  const nameStr = localStorage.getItem(name);
+  try {
+    const parsed = nameStr ? JSON.parse(nameStr) : null
+    return parsed;
+  } catch (err) {
+    console.error('invalid or empty JSON loaded from storage');
+    return null;
   }
+}
+
+window.gbifGetExplorerState = () => {
+  const state = {
+    hideNavigation: true,
+    // newick: localStorage.getItem('newick'),
+    rawTree: this.state.rawTree || window.getJSONFromStorage('rawTree'),
+    // names: window.getJSONFromStorage('names'),
+    matchedNames: this.state.matchedNames || window.getJSONFromStorage('matchedNames'),
+  }
+  return state;
+ }
+}
 
   getJSONFromStorage = function(name) {
     const nameStr = localStorage.getItem(name);
@@ -89,7 +112,7 @@ class ContextProvider extends React.Component {
   }
 }
 
-window.getJSONFromStorage = function(name) {
+/* window.getJSONFromStorage = function(name) {
   const nameStr = localStorage.getItem(name);
   try {
     const parsed = nameStr ? JSON.parse(nameStr) : null
@@ -104,12 +127,12 @@ window.gbifGetExplorerState = () => {
   const state = {
     hideNavigation: true,
     // newick: localStorage.getItem('newick'),
-    rawTree: window.getJSONFromStorage('rawTree'),
+    rawTree: this.state.rawTree || window.getJSONFromStorage('rawTree'),
     // names: window.getJSONFromStorage('names'),
-    matchedNames: window.getJSONFromStorage('matchedNames'),
+    matchedNames: this.state.matchedNames || window.getJSONFromStorage('matchedNames'),
   }
   return state;
-}
+} */
 console.info('To get the state of the app in the console, run window.gbifGetExplorerState()');
 
 
