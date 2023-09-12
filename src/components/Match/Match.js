@@ -82,6 +82,11 @@ class MatchNames extends React.Component {
       let response = await axios.get(`//api.gbif.org/v1/species/match?verbose=true&name=${encodeURIComponent(name.name.replace(/_/g, ' '))}`);
       this.setState({ progress: this.state.progress + 1 })
       name.match = response.data;
+      if (name.match.matchType === 'HIGHERRANK') {
+        name.match = {error: true};
+        callback();
+        return;
+      }
       if (name.match.rank === "UNRANKED") {
         let formattedResponse = await axios.get(`https://www.gbif.org/api/species/${name.match.usageKey}/name`);
         name.match.formattedName = _.get(formattedResponse, "data.n");
@@ -89,8 +94,6 @@ class MatchNames extends React.Component {
       callback();
     } catch (e) {
       console.error(e);
-      // temporary fix for GBIF API bug https://github.com/gbif/checklistbank/issues/259
-      // else it should have thrown an error
       name.match = {error: true};
       callback();
     }
