@@ -198,7 +198,7 @@ function SampleTree({ onNodeEnter, onNodeLeave, highlighted, highlightedLeaf, on
     >
       {node.name && childrenLength === 0 && <span>
         <span>
-          <span className="gb-tree-node-name" dangerouslySetInnerHTML={{ __html: node.title }}></span>
+          <span className="gb-tree-node-name" dangerouslySetInnerHTML={{ __html: node.title || '<em>Unknown name</em>' }}></span>
         </span>
       </span>}
     </div>}
