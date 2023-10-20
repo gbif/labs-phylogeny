@@ -2,7 +2,7 @@ import React from "react";
 import { withRouter } from 'react-router-dom';
 import withContext from "../../withContext";
 // import Tree from './trees/antTree';
-import Tree from './trees/BalancedTree';
+import Tree from './trees/Phylotree';
 
 class TreeWrapper extends React.Component {
   render() {
@@ -16,6 +16,7 @@ const mapContextToProps = ({
   setNames,
   setMatchedNames,
   rawTree,
+  newick,
   matchedNames,
   defaultMultiplier,
 }) => ({
@@ -24,6 +25,7 @@ const mapContextToProps = ({
   setNames,
   setMatchedNames,
   rawTree,
+  newick,
   matchedNames,
   defaultMultiplier,
 });
