@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { PhyloTree } from "./PhyloTree";
-import { Radio, AutoComplete, Slider, Tooltip, Checkbox, Row, Col } from "antd";
+import { Radio, AutoComplete, Slider, Tooltip, Checkbox, Row, Col, Button } from "antd";
+import {downloadSVG} from "./download"
 import "./tree.css";
 import {
   AlignLeftOutlined,
@@ -8,8 +9,6 @@ import {
   DownloadOutlined,
 } from "@ant-design/icons";
 
-import useDraggableScroll from "use-draggable-scroll";
-import { useHotkeys } from "react-hotkeys-hook";
 
 const Option = AutoComplete.Option;
 export const PhyloTreeContainer = (props) => {
@@ -21,11 +20,11 @@ export const PhyloTreeContainer = (props) => {
   const [alignTips, setAlignTips] = useState(false);
   const [spacingX, setSpacingX] = useState(14);
   const [spacingY, setSpacingY] = useState(30);
+  const [maxRadius, setMaxRadius] = useState(768);
   const [asc, setAsc] = useState(null);
   const [showScale, setShowScale] = useState(true)
   const [allowZoom, setAllowZoom] = useState(false)
-
-  const [err, setErr] = useState(null);
+  const [colorLabels, setColorLabels]  = useState(false)
 
   useEffect(() => {
     const suggestions = Object.keys(nameMap)
@@ -132,17 +131,23 @@ export const PhyloTreeContainer = (props) => {
                   buttonStyle="solid"
                 />
               </Col>
+              <Col>
+              <Tooltip title="Downlad tree as SVG">
+                  <Button style={{ marginLeft: "10px" }}  size="small" onClick={() => downloadSVG("svg", document.getElementById("tree_container"))} ><DownloadOutlined /></Button>
+                  </Tooltip>
+              </Col>
               <Col flex="auto"></Col>
               <Col>
                 <Slider
                 tooltip={{formatter: () => "Vertical spacing"}}
                   disabled={radial}
                   style={{ width: "50px", marginTop: "0px" }}
-                  min={10}
+                  min={1}
                   max={60}
                   defaultValue={spacingY}
                   onChange={setSpacingY}
                 />
+                
               </Col>
             </Row>
             <Row>
@@ -153,12 +158,16 @@ export const PhyloTreeContainer = (props) => {
                 <Checkbox checked={allowZoom} onChange={e => setAllowZoom(e.target.checked)}>Zoomable</Checkbox>
 
                 </Col>
+                <Col>
+                <Checkbox checked={colorLabels} onChange={e => setColorLabels(e.target.checked)}>Color labels</Checkbox>
+
+                </Col>
             </Row>
           </Col>
           
 
           <Col span={1}>
-            <Slider
+           {!radial && <Slider
             tooltip={{formatter: () => "Horizontal spacing"}}
               style={{ height: "50px" }}
               vertical
@@ -166,7 +175,16 @@ export const PhyloTreeContainer = (props) => {
               max={128}
               defaultValue={spacingX}
               onChange={setSpacingX}
-            />
+            />}
+            {radial && <Slider
+            tooltip={{formatter: () => "Max radius"}}
+              style={{ height: "50px" }}
+              vertical
+              min={468}
+              max={2048}
+              defaultValue={maxRadius}
+              onChange={setMaxRadius}
+            />}
           </Col>
         </Row>
       </div>
@@ -175,11 +193,13 @@ export const PhyloTreeContainer = (props) => {
         highlightedLeaf={highlightedLeaf}
         spacingY={spacingY}
         spacingX={spacingX}
+        maxRadius={maxRadius}
         radial={radial}
         alignTips={alignTips}
         asc={asc}
         showScale={showScale}
         allowZoom={allowZoom}
+        colorLabels={colorLabels}
       />
     </div>
   );

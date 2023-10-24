@@ -87,10 +87,16 @@ class MatchNames extends React.Component {
         callback();
         return;
       }
-      if (name.match.rank === "UNRANKED") {
+      if(_.get(name, 'match.usageKey')){
         let formattedResponse = await axios.get(`https://www.gbif.org/api/species/${name.match.usageKey}/name`);
         name.match.formattedName = _.get(formattedResponse, "data.n");
       }
+        
+      
+      /* if (name.match.rank === "UNRANKED") {
+        let formattedResponse = await axios.get(`https://www.gbif.org/api/species/${name.match.usageKey}/name`);
+        name.match.formattedName = _.get(formattedResponse, "data.n");
+      } */
       callback();
     } catch (e) {
       console.error(e);

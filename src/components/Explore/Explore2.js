@@ -30,7 +30,7 @@ import { withRouter } from "react-router-dom";
 import PhylogenyTree from "./Tree";
 import Map from './Map';
 import Legend from './Legend';
-import { notification, Row, Col } from 'antd';
+import { notification } from 'antd';
 
 import withContext from "../withContext";
 import SplitPane from "react-split-pane"; // https://github.com/tomkp/react-split-pane
