@@ -9,7 +9,9 @@ const formatLabel = (element, data, nameMap, color, colorLabels, isHighlighted, 
   //element.style("fill", highlighted[data.id].color, "important");
   element.select("text").text("");
   if(!nameMatch){
-    element.select("text").append("tspan").text(data.data.name).append("tspan").text(" [unmatched]").style("font-weight", 900, "important") //.attr('title', 'this could not be matched to the GBIF taxonopmy');
+    element.select("text").append("tspan").text(data.data.name).append("tspan").text(" [unmatched]") //.style("font-weight", 900, "important")
+    element.style("fill", "#999", "important"
+    ) //.attr('title', 'this could not be matched to the GBIF taxonopmy');
   }
   else if (nameMatch) {
     const elm = document.createElement("p");
@@ -49,7 +51,7 @@ const formatLabel = (element, data, nameMap, color, colorLabels, isHighlighted, 
     } 
 
     if(colorLabels){
-      element.style("stroke", color, "important").style("fill", color, "important").style("font-weight", 300, "important")
+      element.style("fill", color, "important") //.style("font-weight", 300, "important")
     }
     
 /*     if(color && isLeaf){
@@ -186,13 +188,14 @@ zoom: false */
             }
           }
           let firstLeaf = _.get(tips, "[0].data")
-              ? _.get(nameMap, `[${tips[0].data.name}].matchedName`)
+              ? _.get(nameMap, `[${tips[0].data.name}].matchedName`, `${tips[0].data.name} [unmatched]`)
               : "",
             firstLeafIndex = _.get(tips, "[0].id"),
             lastLeaf = _.get(tips, `[${tips.length - 1}].data`)
               ? _.get(
                   nameMap,
-                  `[${tips[tips.length - 1].data.name}].matchedName`
+                  `[${tips[tips.length - 1].data.name}].matchedName`,
+                  `${tips[tips.length - 1].data.name} [unmatched]`
                 )
               : "",
             leafIndex = _.get(tips, `[${tips.length - 1}].id`);
@@ -211,15 +214,14 @@ zoom: false */
         if (isLeafNode) {
           hoveredNode_ = {
             isLeafNode: true,
-            firstLeaf: nameMap[data.data.name].matchedName,
+            firstLeaf:_.get(nameMap, `[${data.data.name}].matchedName`, `${data.data.name} [unmatched]`) ,
           };
         } else {
           let tips = tree.selectAllDescendants(data, true, false);
           hoveredNode_ = {
             isLeafNode: false,
-            firstLeaf: nameMap[tips[0].data.name].matchedName,
-            lastLeaf:
-              nameMap[tips[tips.length - 1].data.name].matchedName,
+            firstLeaf:  _.get(nameMap, `[${tips[0].data.name}].matchedName`, `${tips[0].data.name} [unmatched]`),
+            lastLeaf: _.get(nameMap, `[${tips[tips.length - 1].data.name}].matchedName`, `${tips[tips.length - 1].data.name} [unmatched]`)
           };
         }
         setHoveredNode(hoveredNode_);
