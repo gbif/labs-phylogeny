@@ -181,10 +181,11 @@ class Explore extends React.Component {
           }
         }
       });
+     
+      if (taxonKeys > 200) {
+        openNotificationWithIcon({ type: 'warning', total: taxonKeys.length, limit: 200 })
+      } 
       return color;
-      /* if (this.state.node2LeafTaxonKeys[node.key].length > 200) {
-        openNotificationWithIcon({ type: 'warning', total: this.state.node2LeafTaxonKeys[node.key].length, limit: 200 })
-      } */
     }
   }
 
