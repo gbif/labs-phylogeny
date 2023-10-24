@@ -182,7 +182,7 @@ class Explore extends React.Component {
         }
       });
      
-      if (taxonKeys > 200) {
+      if (taxonKeys.length > 200) {
         openNotificationWithIcon({ type: 'warning', total: taxonKeys.length, limit: 200 })
       } 
       return color;
