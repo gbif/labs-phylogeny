@@ -14,11 +14,10 @@ const formatLabel = (element, data, nameMap, color, colorLabels, isHighlighted, 
     ) //.attr('title', 'this could not be matched to the GBIF taxonopmy');
   }
   else if (nameMatch) {
-    const elm = document.createElement("p");
-    elm.innerHTML = nameMatch;
+    element.select("text").append("tspan").text(_.get(nameMap, `[${data.data.name}].match.canonicalName`));
 
-  //  console.log(elm.textContent);
-   
+  /*   const elm = document.createElement("p");
+    elm.innerHTML = nameMatch;   
    if (nameMatch.indexOf('<i>') > -1) {
      
       elm.childNodes.forEach((e) => {
@@ -34,7 +33,7 @@ const formatLabel = (element, data, nameMap, color, colorLabels, isHighlighted, 
       });
     } else {
       element.select("text").append("tspan").text(nameMatch);
-    }
+    } */
   }
   if(isHighlighted){
     element.style("font-weight", 900, "important")
