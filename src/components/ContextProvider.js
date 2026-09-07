@@ -22,7 +22,7 @@ class ContextProvider extends React.Component {
     }
     this.state = {
       ...storedState,
-      mapKey: 'pk.eyJ1IjoiZ2JpZiIsImEiOiJjaWxhZ2oxNWQwMDBxd3FtMjhzNjRuM2lhIn0.g1IE8EfqwzKTkJ4ptv3zNQ',
+      mapKey: 'pk.eyJ1IjoiZ2JpZiIsImEiOiJjbXNzeWN4aDQwZWxmMnlyMW1hbHE3aXoyIn0.KqWSOJOj1De5Yuoo6dYnrQ',
       setNewick: (newick) => {
         this.setState({ newick });
         try {
