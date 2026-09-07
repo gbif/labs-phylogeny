@@ -22,7 +22,6 @@ class ContextProvider extends React.Component {
     }
     this.state = {
       ...storedState,
-      mapKey: 'pk.eyJ1IjoiZ2JpZiIsImEiOiJjbXNzeWN4aDQwZWxmMnlyMW1hbHE3aXoyIn0.KqWSOJOj1De5Yuoo6dYnrQ',
       setNewick: (newick) => {
         this.setState({ newick });
         try {
@@ -56,9 +55,6 @@ class ContextProvider extends React.Component {
           console.log(e)
           //ignore errors
         }
-      },
-      setMapKey: (mapKey) => {
-        this.setState({ mapKey });
       },
       setDefaultMultiplier: (defaultMultiplier) => {
         this.setState({ defaultMultiplier });

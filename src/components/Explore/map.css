@@ -16,6 +16,6 @@
   flex-direction: column;
 }
 
-.mapboxgl-canvas {
+.maplibregl-canvas {
   outline: none;
 }

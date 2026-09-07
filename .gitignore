@@ -65,3 +65,6 @@ typings/
 
 # built project folder
 build
+
+# copied from node_modules by the copy:maplibre script
+public/vendor/maplibre/

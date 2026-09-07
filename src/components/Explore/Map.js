@@ -1,10 +1,40 @@
 import React, { Component } from "react";
-import mapboxgl from "mapbox-gl";
 import Color from 'color';
 import './map.css';
 import { Menu, Dropdown, Button } from 'antd';
 import {DownOutlined} from "@ant-design/icons"
-import withContext from "../withContext";
+
+// maplibre is loaded by a script tag in index.html rather than bundled: react-scripts 2 runs
+// babel over node_modules, and that transpile miscompiles maplibre v2 (colliding variable
+// names in the circle painter, plus a dead web worker), so tiles never decode or draw.
+// npm start/build copy the library out of node_modules into public/vendor/maplibre
+// (see the copy:maplibre script), which keeps the version pinned in package.json.
+const maplibregl = window.maplibregl;
+
+// GBIF's own tile server - no API key required.
+// https://tile.gbif.org/ui/ lists the available styles.
+const BASE_LAYERS = [
+  { id: 'gbif-classic', title: 'Classic' },
+  { id: 'gbif-light', title: 'Light' },
+  { id: 'gbif-dark', title: 'Dark' },
+  { id: 'gbif-natural', title: 'Natural' }
+];
+
+// GBIF serves 512px tiles at @1x, and the same extent at higher resolution for @2x etc.
+const pixelRatio = window.devicePixelRatio > 1 ? 2 : 1;
+
+const baseLayerStyle = style => ({
+  version: 8,
+  sources: {
+    basemap: {
+      type: 'raster',
+      tiles: [`https://tile.gbif.org/3857/omt/{z}/{x}/{y}@${pixelRatio}x.png?style=${style}`],
+      tileSize: 512,
+      attribution: '<a href="https://www.gbif.org/citation-guidelines">GBIF</a> | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }
+  },
+  layers: [{ id: 'basemap', type: 'raster', source: 'basemap' }]
+});
 
 class Map extends Component {
   constructor(props) {
@@ -12,46 +42,39 @@ class Map extends Component {
     this.myRef = React.createRef();
     let menu = (
       <Menu onClick={this.selectBaseLayer}>
-        <Menu.Item key="dark-v10">
-          Dark        
-        </Menu.Item>
-        <Menu.Item key="light-v10">
-          Light
-        </Menu.Item>
-        <Menu.Item key="outdoors-v11">
-          Outdoor
-        </Menu.Item>
-        <Menu.Item key="satellite-v9">
-          Satellite
-        </Menu.Item>
+        {BASE_LAYERS.map(layer => <Menu.Item key={layer.id}>{layer.title}</Menu.Item>)}
       </Menu>
     );
-    mapboxgl.accessToken = props.mapKey;
-    this.state = { selected: props.selected || {}, menu, baseLayer: 'light-v10' };
+    // layers can only be added once the style is ready - style.load flips this
+    this.styleReady = false;
+    this.state = { selected: props.selected || {}, menu, baseLayer: 'gbif-light' };
   }
 
   selectBaseLayer = layer => {
     var layerId = layer.key;
     if (this.state.baseLayer !== layerId) {
-      this.map.setStyle('mapbox://styles/mapbox/' + layerId);
-      this.updateLayers(this.props.selected, this.props.selected);
+      // setStyle drops the occurrence layers. diff: false forces a full style reload, so
+      // style.load fires and puts the current selection back - when maplibre diffs the two
+      // styles instead it applies them in place and never fires the event.
+      this.styleReady = false;
+      this.map.setStyle(baseLayerStyle(layerId), { diff: false });
       this.setState({baseLayer: layerId});
     }
   };
 
   componentDidMount() {
-    this.map = new mapboxgl.Map({
+    this.map = new maplibregl.Map({
       container: this.myRef.current,
-      style: "mapbox://styles/mapbox/" + this.state.baseLayer,
+      style: baseLayerStyle(this.state.baseLayer),
       zoom: 0,
       center: [0, 0]
     });
-    this.map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-left');
-    this.map.on("load", x => this.addLayers(this.props.selected));
+    this.map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
     this.map.on("style.load", x => {
+      this.styleReady = true;
       this.map.setCenter([0, 0]);
       this.map.setZoom(0);
-      this.updateLayers(this.props.selected, this.props.selected);
+      this.addLayers(this.props.selected);
     });
   }
 
@@ -80,6 +103,7 @@ class Map extends Component {
   }
 
   removeLayers = prev => {
+    if (!this.styleReady) return;
     prev = prev || {};
     let list = this.getLayersAsArray(prev);
     list.filter(x => x.taxonKeys && x.taxonKeys.length > 0).forEach(l => {
@@ -93,6 +117,9 @@ class Map extends Component {
   }
 
   addLayers = selected => {
+    // maplibre throws if a layer is added before the style is ready - the style.load
+    // handler adds the current selection once it is
+    if (!this.styleReady) return;
     selected = selected || {};
     let list = this.getLayersAsArray(selected);
     let addLayer = this.addLayer;
@@ -102,11 +129,14 @@ class Map extends Component {
   }
 
   addLayer = (layer) => {
+    const layerId = "occurrences_" + layer.layerName;
+    // style.load and prop updates can both ask for the same layer, so never add it twice
+    if (this.map.getLayer(layerId)) return;
     const query = layer.visibleTaxonKeys.reduce((str, key) => str += `&taxonKey=${key}`, '');
     var tileString = "https://api.gbif.org/v2/map/occurrence/adhoc/{z}/{x}/{y}.mvt?style=scaled.circles&mode=GEO_CENTROID&occurrenceStatus=present&srs=EPSG%3A3857&squareSize=512&hasGeospatialIssue=false&occurrenceStatus=present" + query;
     this.map.addLayer(
       {
-        id: "occurrences_" + layer.layerName,
+        id: layerId,
         type: "circle",
         source: {
           type: "vector",
@@ -142,7 +172,7 @@ class Map extends Component {
     //   // based on the feature found.
     //   console.log(e.features[0].properties.species);
     //   if (e.features[0].properties.species) {
-    //       new mapboxgl.Popup({closeButton: false})
+    //       new maplibregl.Popup({closeButton: false})
     //           .setLngLat(e.lngLat)
     //           .setHTML(e.features[0].properties.species + <span>tester</span>)
     //           .addTo(map);
@@ -171,10 +201,4 @@ class Map extends Component {
   }
 }
 
-const mapContextToProps = ({
-  mapKey,
-}) => ({
-  mapKey,
-});
-
-export default withContext(mapContextToProps)(Map);
+export default Map;
